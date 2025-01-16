@@ -179,7 +179,7 @@ const AppointmentTable = () => {
   }
 
   const convertDate = (date: string): any => {
-    return moment(date).format('DD-MM-YYYY')
+    return moment(date).add(1, 'd').format('DD-MM-YYYY')
   }
 
   return (
