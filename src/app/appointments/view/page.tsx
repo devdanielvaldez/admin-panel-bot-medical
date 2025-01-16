@@ -81,7 +81,7 @@ const AppointmentTable = () => {
               <p><strong className="text-gray-700">Aseguradora:</strong> {appointment.insuranceMake}</p>
               <p><strong className="text-gray-700">Identificación:</strong> {appointment.identification}</p>
               <p><strong className="text-gray-700">Dirección:</strong> {appointment.address}</p>
-              <p><strong className="text-gray-700">Fecha de Cita:</strong> {new Date(appointment.dateAppointment).toLocaleDateString()} {appointment.dateTimeAppointment}</p>
+              <p><strong className="text-gray-700">Fecha de Cita:</strong> {convertDate(appointment.dateAppointment)} {appointment.dateTimeAppointment}</p>
               <p><strong className="text-gray-700">Estado:</strong> {appointment.statusAppointment === "PE" ? 'Pendiente' : appointment.statusAppointment === "CO" ? "Completada" : "Cancelada"}</p>
             </div>
 
