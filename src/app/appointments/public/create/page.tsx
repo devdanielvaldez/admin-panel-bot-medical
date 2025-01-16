@@ -68,10 +68,23 @@ const AppointmentsPage = () => {
     }, []);
 
     const handleChange = (e: any) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value } = e.target;
+
+        // Verificar si el campo es de teléfono o WhatsApp
+        if (name === "patientPhoneNumber" || name === "patientWhatsAppNumber") {
+            // Eliminar cualquier carácter que no sea un número
+            const sanitizedValue = value.replace(/[^0-9]/g, "");
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                [name]: sanitizedValue,
+            }));
+        } else {
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                [name]: value,
+            }));
+        }
+    
     };
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,13 +310,15 @@ const AppointmentsPage = () => {
                 <div>
                     <label className="block text-sm font-medium">WhatsApp del Paciente</label>
                     <input
-                        type="text"
-                        name="patientWhatsAppNumber"
-                        value={formData.patientWhatsAppNumber}
-                        onChange={handleChange}
-                        required
-                        className="w-full p-3 border rounded-md"
-                    />
+                                type="text"
+                                name="patientWhatsAppNumber"
+                                value={formData.patientWhatsAppNumber}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border rounded-md"
+                                pattern="\d*" // Solo permite dígitos
+                                title="Por favor, ingresa solo números"
+                            />
                 </div>
 
                 {/* Motivo de la cita */}
@@ -347,9 +362,18 @@ const AppointmentsPage = () => {
                     >
                         <option value="">Selecciona una aseguradora</option>
                         <option value="Senasa">Senasa</option>
-                        <option value="Primera ARS">Primera ARS</option>
+                        <option value="Humano">Humano</option>
                         <option value="Palic MAPHRE">Palic MAPHRE</option>
                         <option value="Futuro ARS">Futuro ARS</option>
+                        <option value="Universal">Universal</option>
+                        <option value="Monumental">Monumental</option>
+                        <option value="Banreservas">Banreservas</option>
+                        <option value="Semma">Semma</option>
+                        <option value="Renacer">Renacer</option>
+                        <option value="UASD">UASD</option>
+                        <option value="Asemap">Asemap</option>
+                        <option value="APS">APS</option>
+                        <option value="ARL Riesgos Laborales">ARL Riesgos Laborales</option>
                     </select>
                 </div>
             )}
