@@ -76,6 +76,8 @@ const Calendar: React.FC<CalendarProps> = ({ allowedDays, onDateSelect }) => {
 
   return (
     <div>
+      <p><strong>Las fechas en VERDE estan disponibles para agendar, selecciona la fecha deseada y luego la hora</strong></p>
+      <br />
       <div className="calendar-header">
         <button type="button" onClick={prevMonth}>←</button>
         <h2>{currentMonth.format("MMMM YYYY")}</h2>
