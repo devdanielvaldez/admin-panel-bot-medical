@@ -42,7 +42,7 @@
     padding: 4px 0; /* Reducido el padding */
     text-align: center;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: bold;
     transition: background-color 0.3s, color 0.3s;
     border-radius: 3px;
   }
@@ -60,7 +60,8 @@
   }
   
   .calendar-day.selected {
-    color: #ffc107; /* Amarillo para el día seleccionado */
+    color: #fff; /* Amarillo para el día seleccionado */
+    background-color: #ffc107;
   }
   
   /* Estilos para pantallas pequeñas */
@@ -134,7 +135,7 @@
     cursor: pointer;
   }
   
-  .calendar-day.selected {
+  /* .calendar-day.selected {
     background-color: #4caf50;
     color: white;
   }
@@ -147,4 +148,4 @@
     background-color: #e0e0e0;
     cursor: not-allowed;
   }
-  
+   */
