@@ -1,34 +1,43 @@
-"use client";
 import "jsvectormap/dist/jsvectormap.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Loader from "@/components/common/Loader";
 import { Metadata } from "next";
+import NotificationComponent from "./notifications";
+
+export const metadata: Metadata = {
+  title: "SGP - Sistema de Gestión de Pacientes",
+  description: "Sistema de Gestión de Pacientes - v0.1",
+  generator: "Next.js",
+  manifest: "/manifest.json",
+  viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [sidebarOpen, setSidebarOpen] = useState(false);
+  // const [loading, setLoading] = useState<boolean>(true);
 
-  // const pathname = usePathname();
+  // // const pathname = usePathname();
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => setLoading(false), 1000);
+  // }, []);
 
   return (
     <html lang="en">
       <head>
-      <link rel="manifest" href="/public/manifest.json" />
+      {/* <link rel="manifest" href="manifest.json" /> */}
       </head>
       <body suppressHydrationWarning={true}>
         <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          {loading ? <Loader /> : children}
+          {children}
+          {/* <NotificationComponent></NotificationComponent> */}
         </div>
       </body>
     </html>

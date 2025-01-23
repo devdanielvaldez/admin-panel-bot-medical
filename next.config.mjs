@@ -2,7 +2,7 @@
 import withPWA from 'next-pwa';
 const nextConfig = {
   output: 'export',
-  reactStrictMode: true,
+  reactStrictMode: false,
       crossOrigin: 'anonymous',
       images: {
         unoptimized: true, // Deshabilitar la optimización de imágenes

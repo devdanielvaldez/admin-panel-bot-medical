@@ -1,6 +1,8 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { Menu, MenuButton, MenuItem } from "@mui/base";
+import { Dropdown, IconButton } from "@mui/joy";
 import axios from "axios";
 import moment from "moment";
 import { useRouter } from "next/navigation";
@@ -9,9 +11,10 @@ import { useEffect, useState } from "react";
 // Tipo para las citas
 interface Appointment {
   _id: string;
-  patientName: string;
-  patientPhoneNumber: string;
-  patientWhatsAppNumber: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  whatsAppNumber: string;
   patientMotive: string;
   insuranceMake: string;
   identification: string;
@@ -20,6 +23,7 @@ interface Appointment {
   dateAppointment: string;
   dateTimeAppointment: string;
   statusAppointment: string;
+  patientId: string;
 }
 
 
@@ -61,9 +65,9 @@ const AppointmentTable = () => {
           {/* Contenido del modal */}
           <div className="p-6 space-y-4">
             <div className="space-y-2">
-              <p><strong className="text-gray-700">Paciente:</strong> {appointment.patientName}</p>
-              <p><strong className="text-gray-700">Teléfono:</strong> {appointment.patientPhoneNumber}</p>
-              <p><strong className="text-gray-700">WhatsApp:</strong> {appointment.patientWhatsAppNumber}</p>
+              <p><strong className="text-gray-700">Paciente:</strong> {appointment.firstName} {appointment.lastName}</p>
+              <p><strong className="text-gray-700">Teléfono:</strong> {appointment.phoneNumber}</p>
+              <p><strong className="text-gray-700">WhatsApp:</strong> {appointment.whatsAppNumber}</p>
               <p><strong className="text-gray-700">Motivo:</strong> {appointment.patientMotive}</p>
 
               {/* Imagen del seguro */}
@@ -78,8 +82,8 @@ const AppointmentTable = () => {
                 </div>
               )}
 
-              <p><strong className="text-gray-700">Aseguradora:</strong> {appointment.insuranceMake}</p>
-              <p><strong className="text-gray-700">Identificación:</strong> {appointment.identification}</p>
+              <p><strong className="text-gray-700">Aseguradora:</strong> {appointment.insuranceMake || '-'}</p>
+              <p><strong className="text-gray-700">Identificación:</strong> {appointment.identification || '-'}</p>
               <p><strong className="text-gray-700">Dirección:</strong> {appointment.address}</p>
               <p><strong className="text-gray-700">Fecha de Cita:</strong> {convertDate(appointment.dateAppointment)} {appointment.dateTimeAppointment}</p>
               <p><strong className="text-gray-700">Estado:</strong> {appointment.statusAppointment === "PE" ? 'Pendiente' : appointment.statusAppointment === "CO" ? "Completada" : "Cancelada"}</p>
@@ -100,7 +104,7 @@ const AppointmentTable = () => {
 
   const changeStatusToCA = async (appointmentId: string) => {
     try {
-      const response = await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/change-status/ca/${appointmentId}`);
+      const response = await axios.put(`http://localhost:3030/api/appointments/change-status/ca/${appointmentId}`);
       if (response.data.ok) {
         alert("Estado cambiado a 'CA' (Cancelada)");
         fetchAppointments();
@@ -115,7 +119,7 @@ const AppointmentTable = () => {
   // Función para cambiar el estado a "CO" (Completada)
   const changeStatusToCO = async (appointmentId: string) => {
     try {
-      const response = await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/change-status/co/${appointmentId}`);
+      const response = await axios.put(`http://localhost:3030/api/appointments/change-status/co/${appointmentId}`);
       if (response.data.ok) {
         alert("Estado cambiado a 'CO' (Completada)");
         fetchAppointments();
@@ -131,11 +135,11 @@ const AppointmentTable = () => {
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/all");
+      const response = await fetch("http://localhost:3030/api/appointments/all");
       const data = await response.json();
 
       if (data.ok) {
-        setAppointments(data.appointments); // Asignar las citas a la variable de estado
+        setAppointments(data.data); // Asignar las citas a la variable de estado
       } else {
         console.error("Error al obtener las citas");
       }
@@ -151,9 +155,14 @@ const AppointmentTable = () => {
       .push('/appointments/create');
   }
 
+  const goToHistoryClinical = (id: string) => {
+    router
+      .push('/clinicalHistory/create?id=' + id);
+  }
+
   const filteredAppointments = appointments.filter((appointment) =>
-    appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    appointment.patientPhoneNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    appointment.firstName.toLowerCase().includes(searchTerm.toLowerCase()) || appointment.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    appointment.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Paginación
@@ -213,8 +222,8 @@ const AppointmentTable = () => {
               {currentAppointments.map((appointment) => (
                 <tr key={appointment._id}>
                   <td className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
-                    <h5 className="font-medium text-black dark:text-white">{appointment.patientName}</h5>
-                    <p className="text-sm">{appointment.patientPhoneNumber}</p>
+                    <h5 className="font-medium text-black dark:text-white">{appointment.firstName} {appointment.lastName}</h5>
+                    <p className="text-sm">{appointment.phoneNumber}</p>
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                     <p className="text-black dark:text-white">
@@ -225,10 +234,10 @@ const AppointmentTable = () => {
                     <p
                       className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${appointment.statusAppointment === "PE"
                         ? "bg-warning text-warning"
-                        : appointment.statusAppointment === "CO" ? "bg-success text-success" : "bg-danger text-danger"
+                        : appointment.statusAppointment === "CO" ? "bg-success text-success" : appointment.statusAppointment === "CA" ? "bg-danger text-danger" : "bg-primary text-primary"
                         }`}
                     >
-                      {appointment.statusAppointment === "PE" ? "Pendiente" : appointment.statusAppointment === "CA" ? "Cancelada" : "Completada"}
+                      {appointment.statusAppointment === "PE" ? "Pendiente" : appointment.statusAppointment === "CA" ? "Cancelada" : appointment.statusAppointment === "CO" ? "Completada" : appointment.statusAppointment === "COF" ? "Confirmada" : "En Consulta"}
                     </p>
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -253,16 +262,8 @@ const AppointmentTable = () => {
                         </svg>
                       </button>
                       {/* Verifica si el estado de la cita no es 'CA' ni 'CO' */}
-                      {appointment.statusAppointment !== 'CA' && appointment.statusAppointment !== 'CO' && (
+                      {appointment.statusAppointment !== 'CA' && appointment.statusAppointment !== 'CO' && appointment.statusAppointment !== 'COF' && appointment.statusAppointment !== 'IN' && (
                         <>
-                          {/* Botón para ver detalles de la cita */}
-
-                          {/* Botón para cambiar el estado a "CO" */}
-                          <button className="hover:text-primary" onClick={() => changeStatusToCO(appointment._id)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                            </svg>
-                          </button>
 
                           {/* Botón para cambiar el estado a "CA" */}
                           <button className="hover:text-primary" onClick={() => changeStatusToCA(appointment._id)}>
@@ -272,6 +273,11 @@ const AppointmentTable = () => {
                           </button>
                         </>
                       )}
+                      <button onClick={() => goToHistoryClinical(appointment.patientId)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -292,9 +298,8 @@ const AppointmentTable = () => {
         {Array.from({ length: totalPages }, (_, i) => (
           <button
             key={i}
-            className={`px-3 py-1 rounded ${
-              currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-300"
-            }`}
+            className={`px-3 py-1 rounded ${currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-300"
+              }`}
             onClick={() => goToPage(i + 1)}
           >
             {i + 1}

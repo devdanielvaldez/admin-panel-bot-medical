@@ -10,6 +10,8 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import Calendar from '@/components/Calendar';
 import moment from 'moment';
+import Select from 'react-select';
+import InvoiceModal from '@/components/InvoceModal/Invoce';
 
 // Firebase Configuración
 const firebaseConfig = {
@@ -29,6 +31,7 @@ const storage = getStorage(app);
 const AppointmentsPage = () => {
     const [formData, setFormData] = useState({
         patientName: '',
+        patientLastName: '',
         patientPhoneNumber: '',
         patientWhatsAppNumber: '',
         patientMotive: '',
@@ -38,7 +41,10 @@ const AppointmentsPage = () => {
         insuranceImage: '',
         address: '',
         dateAppointment: '',
-        dateTimeAppointment: ''
+        dateTimeAppointment: '',
+        bornDate: '',
+        sex: '',
+        services: []
     });
 
     const [availableDays, setAvailableDays] = useState<string[]>([]);
@@ -47,12 +53,17 @@ const AppointmentsPage = () => {
     const [loading, setLoading] = useState(false);
     const [availableDayJSON, setAvailableDayJSON] = useState<any>([]);
     const [listHours, setListHours] = useState<any>([]);
+    const [isDisabled, setIsDisabled] = useState<boolean>(false);
+    const [insurancesList, setInsurancesList] = useState<any>();
+    const [serviceList, setServiceList] = useState<any>();
+    const [isModalOpen, setisModalOpen] = useState<boolean>(false);
+    const [invoiceData, setinvoiceData] = useState<any>();
 
     // Cargar los días habilitados desde el servicio
     useEffect(() => {
         const fetchAvailableDays = async () => {
             try {
-                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/available-work-days/list');
+                const response = await axios.get('http://localhost:3030/api/available-work-days/list');
                 if (response.data.ok) {
                     const days = response.data.availableWorkDays.map((day: any) => day.dayOfWeek);
                     setAvailableDays(days);
@@ -63,28 +74,97 @@ const AppointmentsPage = () => {
                 console.error('Error fetching available work days:', err);
             }
         };
+
+        const fetchInsurances = async () => {
+            try {
+                const response = await axios.get('http://localhost:3030/api/insurances/list');
+                console.log(response.data.data);
+                setInsurancesList(response.data.data);
+            } catch (err) {
+                console.error('Error fetching isurances:', err);
+            }
+        }
+
+        const fetchServices = async () => {
+            const response = await axios.get('http://localhost:3030/api/services/list');
+            const formattedServices = response.data.services.map((services: any) => ({
+                label: `${services.serviceName}`,
+                value: services._id,
+            }));
+            setServiceList(formattedServices);
+            console.log(response.data.services);
+        }
+
         fetchAvailableDays();
+        fetchInsurances();
+        fetchServices();
     }, []);
 
-    const handleChange = (e: any) => {
+    const findPatientInfo = async (phoneNumber: string) => {
+        try {
+            const response = await axios.post('http://localhost:3030/api/patient/find', {
+                phoneNumber: phoneNumber
+            });
+            if (response.data.ok) {
+                console.log(response.data);
+                // setIsDisabled(false);
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    patientName: response.data.patient.firstName,
+                    patientLastName: response.data.patient.lastName,
+                    patientWhatsAppNumber: response.data.patient.whatsAppNumber,
+                    address: response.data.patient.address,
+                    patientIsInsurante: response.data.patient.isInsurance,
+                    insuranceMake: response.data.patient?.insuranceMake,
+                    identification: response.data.patient?.identification,
+                    insuranceImage: response.data.patient?.insuranceImage,
+                    bornDate: response.data.patient?.bornDate,
+                    sex: response.data.patient?.sex
+                }));
+            }
+        } catch (err: any) {
+            console.log(err.response.data.ok);
+            if (!err.response.data.ok) {
+                setIsDisabled(false);
+            }
+            console.error('Error fetching available work days:', err);
+        }
+    }
+
+    const handleCloseModal = () => {
+        setisModalOpen(false);
+    }
+
+    const handleChange = async (e: any) => {
         const { name, value } = e.target;
 
-        // Verificar si el campo es de teléfono o WhatsApp
         if (name === "patientPhoneNumber" || name === "patientWhatsAppNumber") {
             // Eliminar cualquier carácter que no sea un número
             const sanitizedValue = value.replace(/[^0-9]/g, "");
+
             setFormData((prevFormData) => ({
                 ...prevFormData,
                 [name]: sanitizedValue,
             }));
+
+            // Verificar si el número tiene exactamente 10 dígitos
+            if (sanitizedValue.length === 10) {
+                try {
+                    // Llamada al servicio
+                    console.log("Llamando al servicio con el número:", sanitizedValue);
+                    findPatientInfo(sanitizedValue);
+                } catch (error) {
+                    console.error("Error al llamar al servicio:", error);
+                }
+            }
         } else {
             setFormData((prevFormData) => ({
                 ...prevFormData,
                 [name]: value,
             }));
         }
-    
     };
+
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -111,11 +191,16 @@ const AppointmentsPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setisModalOpen(true);
+    };
+
+    const registerAppointment = async () => {
+        setisModalOpen(false);
         setLoading(true);
         setError('');
 
         try {
-            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/create', formData);
+            const response = await axios.post('http://localhost:3030/api/appointments/create', formData);
             if (response.data.ok) {
                 router.push('/appointments/view');
             }
@@ -124,15 +209,7 @@ const AppointmentsPage = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const disableDates = (date: Date) => {
-        // Obtener el día de la semana en español
-        const dayOfWeek = date.toLocaleDateString('es-ES', { weekday: 'long' });
-
-        // Deshabilitar los días que no están en la lista de días disponibles
-        return !availableDays.includes(dayOfWeek);
-    };
+    }
 
     const handleDateSelection = async (selectedDate: string | null) => {
         console.log(selectedDate);
@@ -167,7 +244,7 @@ const AppointmentsPage = () => {
             const timeRanges = dayData.workHours;
 
             try {
-                const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/block-dates/list");
+                const response = await axios.get("http://localhost:3030/api/block-dates/list");
                 const blockedDates = response.data.blockedDates;
                 console.log(blockedDates);
 
@@ -254,7 +331,24 @@ const AppointmentsPage = () => {
         return `${formattedHour}:${minutePart} ${period}`;
     }
 
-
+    const calculateTotal = async (e: any) => {
+        const servicesList = e.map((s: any) => s.value);
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            services: servicesList
+        }));
+        const response = await axios.post('http://localhost:3030/api/appointments/calculate', {
+            servicesIds: servicesList, insuranceId: formData.insuranceMake, isWithInsurance: formData.patientIsInsurante
+        })
+            .then((d: any) => {
+                console.log(d.data);
+                setinvoiceData(d.data.total);
+                // setisModalOpen(true);
+            })
+            .catch((err: any) => {
+                console.log(err.response.data.error);
+            });
+    }
 
     return (
         <DefaultLayout>
@@ -265,7 +359,19 @@ const AppointmentsPage = () => {
                 {error && <div className="text-red-600 text-center mb-4">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div className='mb-4'>
+                        <label className="block text-sm font-medium">Teléfono del Paciente</label>
+                        <input
+                            type="number"
+                            name="patientPhoneNumber"
+                            value={formData.patientPhoneNumber}
+                            onChange={handleChange}
+                            required
+                            className="w-full p-3 border rounded-md"
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                        {/* Teléfono del paciente */}
                         {/* Nombre del paciente */}
                         <div>
                             <label className="block text-sm font-medium">Nombre del Paciente</label>
@@ -276,19 +382,19 @@ const AppointmentsPage = () => {
                                 onChange={handleChange}
                                 required
                                 className="w-full p-3 border rounded-md"
+                                disabled={isDisabled}
                             />
                         </div>
-
-                        {/* Teléfono del paciente */}
                         <div>
-                            <label className="block text-sm font-medium">Teléfono del Paciente</label>
+                            <label className="block text-sm font-medium">Apellido(s) del Paciente</label>
                             <input
-                                type="number"
-                                name="patientPhoneNumber"
-                                value={formData.patientPhoneNumber}
+                                type="text"
+                                name="patientLastName"
+                                value={formData.patientLastName}
                                 onChange={handleChange}
                                 required
                                 className="w-full p-3 border rounded-md"
+                                disabled={isDisabled}
                             />
                         </div>
 
@@ -304,34 +410,47 @@ const AppointmentsPage = () => {
                                 className="w-full p-3 border rounded-md"
                                 pattern="\d*" // Solo permite dígitos
                                 title="Por favor, ingresa solo números"
-                            />
-                        </div>
-
-                        {/* Motivo de la cita */}
-                        <div>
-                            <label className="block text-sm font-medium">Motivo de la Cita</label>
-                            <input
-                                type="text"
-                                name="patientMotive"
-                                value={formData.patientMotive}
-                                onChange={handleChange}
-                                required
-                                className="w-full p-3 border rounded-md"
+                                disabled={isDisabled}
                             />
                         </div>
                     </div>
 
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4'>
+                        <div>
+                            <label className="block text-sm font-medium">Fecha de Nacimiento</label>
+                            <input
+                                type="date"
+                                name="bornDate"
+                                value={formData.bornDate}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border rounded-md"
+                                disabled={isDisabled}
+                            />
+                        </div>
+
+                        <div>
+                        <label className="block text-sm font-medium">Sexo</label>
+                        <select name="sex" id="sex" value={formData.sex} required onChange={handleChange} disabled={isDisabled} className="w-full p-3 border rounded-md">
+                            <option value="" selected disabled hidden>Seleccione su sexo</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                        </div>
+                    </div>
+
                     {/* Checkbox: ¿Está asegurado? */}
-                    <div className="mb-4">
+                    <div className="mb-4 mt-4">
                         <label className="inline-flex items-center">
                             <input
                                 type="checkbox"
                                 name="patientIsInsurante"
                                 checked={formData.patientIsInsurante}
                                 onChange={handleCheckboxChange}
-                                className="mr-2"
+                                className="mr-2 w-6 h-6" // Ajusta el tamaño del checkbox
+                                disabled={isDisabled}
                             />
-                            Usted es un paciente con seguro medico
+                            <span className="ml-2">Usted es un paciente con seguro médico</span>
                         </label>
                     </div>
 
@@ -345,12 +464,12 @@ const AppointmentsPage = () => {
                                 onChange={handleChange}
                                 className="w-full p-3 border rounded-md"
                                 required
+                                disabled={isDisabled}
                             >
-                                <option value="">Selecciona una aseguradora</option>
-                                <option value="Senasa">Senasa</option>
-                                <option value="Primera ARS">Primera ARS</option>
-                                <option value="Palic MAPHRE">Palic MAPHRE</option>
-                                <option value="Futuro ARS">Futuro ARS</option>
+                                <option value="" selected disabled hidden>Selecciona una aseguradora</option>
+                                {insurancesList.map((insurance: any) => (
+                                    <option key={insurance._id} value={insurance._id}>{insurance.insuranceName}</option>
+                                ))}
                             </select>
                         </div>
                     )}
@@ -366,6 +485,7 @@ const AppointmentsPage = () => {
                                 onChange={handleChange}
                                 required
                                 className="w-full p-3 border rounded-md"
+                                disabled={isDisabled}
                             />
                         </div>
                     )}
@@ -384,7 +504,7 @@ const AppointmentsPage = () => {
                                         <p className="mt-2 text-sm text-blue-500">Seleccionar archivo</p>
                                     </div>
                                 ) : (
-                                    <img src={formData.insuranceImage} alt="Imagen del seguro" className="w-full h-auto rounded-md" />
+                                    <img src={formData.insuranceImage} alt="Imagen del seguro" className="w-[180px] h-[180px] rounded-md" />
                                 )}
                                 <input
                                     type="file"
@@ -393,10 +513,36 @@ const AppointmentsPage = () => {
                                     onChange={handleFileChange}
                                     accept="image/*"
                                     className="hidden"
+                                    disabled={isDisabled}
                                 />
                             </div>
                         </div>
                     )}
+
+                    <div className='mb-4'>
+                        <label className="block text-sm font-medium">Servicios</label>
+                        <Select
+                            isMulti
+                            name="servicios"
+                            options={serviceList}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            placeholder="Seleccione los servicios que desea"
+                            onChange={(e) => calculateTotal(e)}
+                        />
+                    </div>
+
+                    <div className='mb-4'>
+                        <label className="block text-sm font-medium">Motivo de la Cita</label>
+                        <textarea
+                            name="patientMotive"
+                            value={formData.patientMotive}
+                            onChange={handleChange}
+                            required
+                            className="w-full p-3 border rounded-md"
+                            placeholder='Ingrese el motivo por el cual asiste a la consulta'
+                        ></textarea>
+                    </div>
 
                     {/* Dirección */}
                     <div className="mb-4">
@@ -408,6 +554,7 @@ const AppointmentsPage = () => {
                             onChange={handleChange}
                             required
                             className="w-full p-3 border rounded-md"
+                            disabled={isDisabled}
                         />
                     </div>
 
@@ -449,6 +596,12 @@ const AppointmentsPage = () => {
                     </div>
                 </form>
             </div>
+            <InvoiceModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onSave={registerAppointment}
+                data={invoiceData}
+            />
         </DefaultLayout>
 
     );
