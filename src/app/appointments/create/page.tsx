@@ -64,7 +64,7 @@ const AppointmentsPage = () => {
     useEffect(() => {
         const fetchAvailableDays = async () => {
             try {
-                const response = await axios.get(process.env.API_URL+ 'available-work-days/list');
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/'+ 'available-work-days/list');
                 if (response.data.ok) {
                     const days = response.data.availableWorkDays.map((day: any) => day.dayOfWeek);
                     setAvailableDays(days);
@@ -78,7 +78,7 @@ const AppointmentsPage = () => {
 
         const fetchInsurances = async () => {
             try {
-                const response = await axios.get(process.env.API_URL + 'insurances/list');
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'insurances/list');
                 console.log(response.data.data);
                 setInsurancesList(response.data.data);
             } catch (err) {
@@ -87,7 +87,7 @@ const AppointmentsPage = () => {
         }
 
         const fetchServices = async () => {
-            const response = await axios.get(process.env.API_URL + 'services/list');
+            const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'services/list');
             const formattedServices = response.data.services.map((services: any) => ({
                 label: `${services.serviceName}`,
                 value: services._id,
@@ -103,7 +103,7 @@ const AppointmentsPage = () => {
 
     const findPatientInfo = async (phoneNumber: string) => {
         try {
-            const response = await axios.post(process.env.API_URL + 'patient/find', {
+            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'patient/find', {
                 phoneNumber: phoneNumber
             });
             if (response.data.ok) {
@@ -201,7 +201,7 @@ const AppointmentsPage = () => {
         setError('');
 
         try {
-            const response = await axios.post(process.env.API_URL + 'appointments/create', formData);
+            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/create', formData);
             if (response.data.ok) {
                 router.push('/appointments/view');
             }
@@ -338,7 +338,7 @@ const AppointmentsPage = () => {
             ...prevFormData,
             services: servicesList
         }));
-        const response = await axios.post(process.env.API_URL + 'appointments/calculate', {
+        const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/calculate', {
             servicesIds: servicesList, insuranceId: formData.insuranceMake, isWithInsurance: formData.patientIsInsurante
         })
             .then((d: any) => {

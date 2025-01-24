@@ -16,7 +16,7 @@ const BlockedDatesPage = () => {
   // Función para obtener las fechas bloqueadas
   const fetchBlockedDates = async () => {
     try {
-      const response = await axios.get(process.env.API_URL + 'block-dates/list');
+      const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'block-dates/list');
       setBlockedDates(response.data.blockedDates);
     } catch (err) {
       setError('Error al cargar las fechas bloqueadas.');

@@ -53,7 +53,7 @@ const AppointmentsPage = () => {
     useEffect(() => {
         const fetchAvailableDays = async () => {
             try {
-                const response = await axios.get(process.env.API_URL + 'available-work-days/list');
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'available-work-days/list');
                 if (response.data.ok) {
                     const days = response.data.availableWorkDays.map((day: any) => day.dayOfWeek);
                     setAvailableDays(days);
@@ -116,7 +116,7 @@ const AppointmentsPage = () => {
         setError('');
 
         try {
-            const response = await axios.post(process.env.API_URL + 'appointments/create', formData);
+            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/create', formData);
             if (response.data.ok) {
                 setPopupVisible(true); // Mostrar el popup de éxito
                 setFormData({

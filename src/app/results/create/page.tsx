@@ -100,7 +100,7 @@ const RegisterResults: React.FC = () => {
         setLoading(true);
 
         try {
-            await axios.post(process.env.API_URL + 'results/create', {
+            await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'results/create', {
                 patientId: selectedPatient,
                 testName: resultName,
                 testDate: resultDate,
