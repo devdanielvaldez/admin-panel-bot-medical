@@ -58,8 +58,8 @@ const Header = (props: {
 
           <Link className="block flex-shrink-0 lg:hidden" href="/">
             <Image
-              width={32}
-              height={32}
+              width={152}
+              height={152}
               src={"/images/logo/logo.png"}
               alt="Logo"
             />
