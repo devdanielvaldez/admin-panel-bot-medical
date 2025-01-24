@@ -53,7 +53,7 @@ const RegisterResults: React.FC = () => {
     // Buscar pacientes desde el backend
     const fetchPatients = async () => {
         try {
-            const response = await axios.get(`http://localhost:3030/api/patient/find/all`);
+            const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/api/patient/find/all`);
             if (response.data.ok) {
                 const formattedPatients = response.data.data.map((patient: any) => ({
                     label: `${patient.firstName} ${patient.lastName}`,

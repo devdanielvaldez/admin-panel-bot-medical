@@ -16,7 +16,7 @@ const InsurancesTable = () => {
   const fetchInsurances = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3030/api/insurances/list");
+      const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/list");
       const data = response.data;
       setInsurances(data.data);
     } catch (error) {

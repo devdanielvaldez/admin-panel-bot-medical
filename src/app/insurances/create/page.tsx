@@ -31,7 +31,7 @@ const InsuranceRegistration: React.FC = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/api/services/list");
+        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/services/list");
         if (response.data.ok) {
           setServices(response.data.services);
         }
@@ -81,7 +81,7 @@ const InsuranceRegistration: React.FC = () => {
     setMessage(null);
 
     try {
-      const response = await axios.post("http://localhost:3030/api/insurances/create", {
+      const response = await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/create", {
         insuranceName,
         contactPhone,
         services: selectedServices,

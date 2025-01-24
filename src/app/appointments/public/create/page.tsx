@@ -181,7 +181,7 @@ const AppointmentsPage = () => {
             const timeRanges = dayData.workHours;
     
             try {
-                const response = await axios.get("http://localhost:3030/api/block-dates/list");
+                const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/block-dates/list");
                 const blockedDates = response.data.blockedDates;
                 console.log(blockedDates);
     

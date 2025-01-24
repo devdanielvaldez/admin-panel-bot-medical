@@ -31,7 +31,7 @@ const BlockedDatesPage = () => {
       const confirmed = confirm('¿Estás seguro de que deseas eliminar esta fecha bloqueada?');
       if (!confirmed) return;
 
-      await axios.delete(`http://localhost:3030/api/block-dates/delete/${id}`);
+      await axios.delete(`https://api-jennifer-wkeor.ondigitalocean.app/api/block-dates/delete/${id}`);
       setBlockedDates((prevDates) => prevDates.filter((date) => date._id !== id));
     } catch (err) {
       setError('Error al eliminar la fecha bloqueada.');
