@@ -553,4 +553,6 @@ const AppointmentMedicalDetails = forwardRef<{}, AppointmentMedicalDetailsProps>
     );
 });
 
+AppointmentMedicalDetails.displayName = 'AppointmentMedicalDetails';
+
 export default AppointmentMedicalDetails;
