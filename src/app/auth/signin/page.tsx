@@ -42,7 +42,7 @@ const SignIn: React.FC = () => {
       });
       // await signInWithEmailAndPassword(auth, email, password);
       await axios
-        .post('http://localhost:3030/api/auth/login', {
+        .post(process.env.API_URL + 'auth/login', {
           username: email,
           pwd: password
         })

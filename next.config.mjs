@@ -5,12 +5,12 @@ const nextConfig = {
   reactStrictMode: false,
       crossOrigin: 'anonymous',
       images: {
-        unoptimized: true, // Deshabilitar la optimización de imágenes
+        unoptimized: true,
       },
 };
 
 export default withPWA({
-  dest: "public",         // destination directory for the PWA files
-  register: true,         // register the PWA service worker
-  skipWaiting: true,      // skip waiting for service worker activation
+  dest: "public",
+  register: true,
+  skipWaiting: true,
 })(nextConfig);
