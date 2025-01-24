@@ -9,6 +9,7 @@ import { initializeApp } from 'firebase/app';
 import Select from 'react-select';
 import Notiflix from 'notiflix';
 import { useRouter } from 'next/navigation';
+import withAuth from '@/hooks/useAuth';
 
 // Configuración de Firebase
 const firebaseConfig = {
@@ -240,4 +241,4 @@ const RegisterResults: React.FC = () => {
     );
 };
 
-export default RegisterResults;
+export default withAuth(RegisterResults);

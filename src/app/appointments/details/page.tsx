@@ -2,6 +2,7 @@
 
 import AppointmentMedicalDetails from '@/components/AppointmentMedicalDetails';
 import DefaultLayout from '@/components/Layouts/DefaultLayout';
+import withAuth from '@/hooks/useAuth';
 import axios from 'axios';
 import moment from 'moment';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -293,4 +294,4 @@ const AppointmentDetails = () => {
   );
 };
 
-export default AppointmentDetails;
+export default withAuth(AppointmentDetails);

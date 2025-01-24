@@ -1,6 +1,7 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -91,4 +92,4 @@ const WorkDayTable = () => {
   );
 };
 
-export default WorkDayTable;
+export default withAuth(WorkDayTable);

@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import axios from "axios";
 import PatientInfo from "@/components/PatientInfo";
 import ClinicalHistoryModal from "@/components/MedicalHistoryReportModal/ReportMedicalHistoryModal";
+import withAuth from "@/hooks/useAuth";
 
 interface ClinicalHistoryFormProps {
     initialData?: ClinicalHistoryData;
@@ -551,4 +552,4 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
     );
 };
 
-export default ClinicalHistoryForm;
+export default withAuth(ClinicalHistoryForm);

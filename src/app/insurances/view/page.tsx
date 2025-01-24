@@ -1,6 +1,7 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -108,4 +109,4 @@ const InsurancesTable = () => {
   );
 };
 
-export default InsurancesTable;
+export default withAuth(InsurancesTable);

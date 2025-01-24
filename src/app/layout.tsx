@@ -3,12 +3,12 @@ import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
 import React from "react";
-import Loader from "@/components/common/Loader";
+// import Loader from "@/components/common/Loader";
 import { Metadata } from "next";
-import NotificationComponent from "./notifications";
+// import NotificationComponent from "./notifications";
 
 export const metadata: Metadata = {
-  title: "SGP - Sistema de Gestión de Pacientes",
+  title: "SGP",
   description: "Sistema de Gestión de Pacientes - v0.1",
   generator: "Next.js",
   manifest: "/manifest.json",

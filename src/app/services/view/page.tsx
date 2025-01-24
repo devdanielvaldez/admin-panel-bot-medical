@@ -1,6 +1,7 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 import axios from "axios";
 import moment from "moment";
 import { useRouter } from "next/navigation";
@@ -94,4 +95,4 @@ const ServicesTable = () => {
   );
 };
 
-export default ServicesTable;
+export default withAuth(ServicesTable);

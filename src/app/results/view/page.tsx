@@ -1,6 +1,7 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 import axios from "axios";
 import moment from "moment";
 import { useRouter } from "next/navigation";
@@ -191,4 +192,4 @@ const ResultsTable = () => {
     );
 };
 
-export default ResultsTable;
+export default withAuth(ResultsTable);

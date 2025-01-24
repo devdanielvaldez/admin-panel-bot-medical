@@ -3,6 +3,7 @@
 import { useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useRouter } from "next/navigation";
+import withAuth from "@/hooks/useAuth";
 
 const BlockDatePage = () => {
   const [dateBlock, setDateBlock] = useState<string>("");
@@ -154,4 +155,4 @@ const BlockDatePage = () => {
   );
 };
 
-export default BlockDatePage;
+export default withAuth(BlockDatePage);

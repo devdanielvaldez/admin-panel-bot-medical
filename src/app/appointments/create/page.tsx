@@ -12,6 +12,7 @@ import Calendar from '@/components/Calendar';
 import moment from 'moment';
 import Select from 'react-select';
 import InvoiceModal from '@/components/InvoceModal/Invoce';
+import withAuth from '@/hooks/useAuth';
 
 // Firebase Configuración
 const firebaseConfig = {
@@ -607,4 +608,4 @@ const AppointmentsPage = () => {
     );
 };
 
-export default AppointmentsPage;
+export default withAuth(AppointmentsPage);

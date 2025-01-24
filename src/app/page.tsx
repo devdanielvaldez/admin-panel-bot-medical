@@ -1,11 +1,9 @@
-import ECommerce from "@/components/Dashboard/E-commerce";
 import { Metadata } from "next";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import SignIn from "./auth/signin/page";
 
 export const metadata: Metadata = {
   title:
-    "SGP - Sistema de Gestión de Pacientes",
+    "Iniciar",
   description: "SGP es un sistema de gestión de pacientes y agenda medica",
 };
 

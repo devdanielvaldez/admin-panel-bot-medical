@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useRouter } from "next/navigation";
+import withAuth from "@/hooks/useAuth";
 
 const WorkDayForm = () => {
   const [dayOfWeek, setDayOfWeek] = useState<string>("");
@@ -163,4 +164,4 @@ const WorkDayForm = () => {
   );
 };
 
-export default WorkDayForm;
+export default withAuth(WorkDayForm);

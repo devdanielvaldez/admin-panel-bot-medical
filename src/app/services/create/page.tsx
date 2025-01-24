@@ -3,6 +3,7 @@
 import React, { useState, FormEvent } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 
 interface Message {
     type: "success" | "error";
@@ -133,4 +134,4 @@ const ServiceRegistration: React.FC = () => {
     );
 };
 
-export default ServiceRegistration;
+export default withAuth(ServiceRegistration);

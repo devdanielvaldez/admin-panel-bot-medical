@@ -5,6 +5,7 @@ import axios from 'axios';
 import DefaultLayout from '@/components/Layouts/DefaultLayout';
 import { useRouter } from 'next/navigation';
 import moment from 'moment';
+import withAuth from '@/hooks/useAuth';
 
 const BlockedDatesPage = () => {
   const [blockedDates, setBlockedDates] = useState<any[]>([]);
@@ -108,4 +109,4 @@ const BlockedDatesPage = () => {
   );
 };
 
-export default BlockedDatesPage;
+export default withAuth(BlockedDatesPage);

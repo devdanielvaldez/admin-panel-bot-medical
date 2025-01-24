@@ -1,6 +1,7 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Notiflix from "notiflix";
@@ -111,4 +112,4 @@ const TurnsList: React.FC = () => {
     );
 };
 
-export default TurnsList;
+export default withAuth(TurnsList);

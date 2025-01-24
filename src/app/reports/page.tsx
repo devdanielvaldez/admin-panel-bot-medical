@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 
 interface ServiceUsed {
   service: {
@@ -207,4 +208,4 @@ const ReportsPage = () => {
   );
 };
 
-export default ReportsPage;
+export default withAuth(ReportsPage);

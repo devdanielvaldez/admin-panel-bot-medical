@@ -3,6 +3,7 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 
 interface Message {
   type: "success" | "error";
@@ -202,4 +203,4 @@ const InsuranceRegistration: React.FC = () => {
   );
 };
 
-export default InsuranceRegistration;
+export default withAuth(InsuranceRegistration);

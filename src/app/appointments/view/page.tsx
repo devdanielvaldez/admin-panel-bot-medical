@@ -1,6 +1,7 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import withAuth from "@/hooks/useAuth";
 import { Menu, MenuButton, MenuItem } from "@mui/base";
 import { Dropdown, IconButton } from "@mui/joy";
 import axios from "axios";
@@ -319,4 +320,4 @@ const AppointmentTable = () => {
   );
 };
 
-export default AppointmentTable;
+export default withAuth(AppointmentTable);
