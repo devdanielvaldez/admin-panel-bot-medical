@@ -19,7 +19,7 @@ const ServicesTable = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/services/list");
+      const response = await axios.get("http://localhost:3030/api/services/list");
       const data = await response;
         console.log(data.data.services);
       setServices(data.data.services);
