@@ -320,4 +320,6 @@ const AppointmentTable = () => {
   );
 };
 
+AppointmentTable.displayName = 'AppointmentTable';
+
 export default withAuth(AppointmentTable);

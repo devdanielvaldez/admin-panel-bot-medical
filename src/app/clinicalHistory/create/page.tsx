@@ -183,7 +183,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
         delete embedding.embedding;
         delete embedding.patientId.embedding;
         const response = await axios
-            .post(process.env.API_URL + 'clinical/history/analyze', {
+            .post('http://localhost:3030/api/' + 'clinical/history/analyze', {
                 embedding: embedding
             });
         setReport(response.data.analysis);
@@ -193,7 +193,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
         setPatientId(searchParams.get('id') || "");
         const fetchHistoryClinical = async () => {
             try {
-                const response = await axios.get(process.env.API_URL + 'clinical/history/' + searchParams.get('id'));
+                const response = await axios.get('http://localhost:3030/api/' + 'clinical/history/' + searchParams.get('id'));
                 if (response.data.clinicalHistory.embedding) {
                     getAnalyzes(response.data.clinicalHistory);
                 }
@@ -250,7 +250,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
 
         const fetchPatient = async () => {
             const response = await axios
-                .get(process.env.API_URL + 'patient/find/' + searchParams.get('id'));
+                .get('http://localhost:3030/api/' + 'patient/find/' + searchParams.get('id'));
             const data = response.data.data;
             setPatientData({
                 firstName: data.firstName,
@@ -299,7 +299,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await axios.post(process.env.API_URL + 'clinical/history/create', {
+            await axios.post('http://localhost:3030/api/' + 'clinical/history/create', {
                 patientId,
                 ...formData,
             });

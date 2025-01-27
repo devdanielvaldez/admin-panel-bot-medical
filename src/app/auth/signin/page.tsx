@@ -42,7 +42,7 @@ const SignIn: React.FC = () => {
       });
       // await signInWithEmailAndPassword(auth, email, password);
       await axios
-        .post(process.env.API_URL + 'auth/login', {
+        .post('http://localhost:3030/api/' + 'auth/login', {
           username: email,
           pwd: password
         })
@@ -54,6 +54,7 @@ const SignIn: React.FC = () => {
         })
         .catch((err) => {
           Notiflix.Loading.remove();
+          Notiflix.Notify.failure('Usuario y/o Contraseña incorrectos');
           console.log(err);
         })
     } catch (err) {
