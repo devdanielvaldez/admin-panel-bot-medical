@@ -65,31 +65,31 @@ const TurnsList: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {appointments.map((appointment) => (
                         <div
-                            key={appointment._id}
+                            key={appointment?._id}
                             className="bg-white dark:bg-gray-800 shadow-xl rounded-3xl p-6 flex flex-col justify-between transform transition-all hover:scale-105 hover:shadow-2xl"
                         >
                             {/* Información del Paciente */}
                             <div>
                                 <h2 className="text-2xl font-extrabold text-gray-800 dark:text-white">
-                                    {appointment.appointmentId.patientId.firstName}{' '}
-                                    {appointment.appointmentId.patientId.lastName}
+                                    {appointment?.appointmentId?.patientId?.firstName}{' '}
+                                    {appointment?.appointmentId?.patientId?.lastName}
                                 </h2>
                                 <p className="text-gray-600 dark:text-gray-300 mt-2">
-                                    {appointment.appointmentId.patientMotive}
+                                    {appointment?.appointmentId?.patientMotive}
                                 </p>
                                 <p
-                                    className={`mt-4 inline-block text-sm font-semibold px-3 py-1 rounded-full ${appointment.appointmentId.statusAppointment === 'PE'
+                                    className={`mt-4 inline-block text-sm font-semibold px-3 py-1 rounded-full ${appointment?.appointmentId?.statusAppointment === 'PE'
                                             ? 'bg-yellow-100 text-yellow-600'
-                                            : appointment.appointmentId.statusAppointment === 'En Progreso'
+                                            : appointment?.appointmentId?.statusAppointment === 'En Progreso'
                                                 ? 'bg-blue-100 text-blue-600'
                                                 : 'bg-green-100 text-green-600'
                                         }`}
                                 >
-                                    {appointment.appointmentId.statusAppointment === 'PE'
+                                    {appointment?.appointmentId?.statusAppointment === 'PE'
                                         ? 'Pendiente'
-                                        : appointment.appointmentId.statusAppointment === 'IN'
+                                        : appointment?.appointmentId?.statusAppointment === 'IN'
                                             ? 'En Progreso'
-                                            : appointment.appointmentId.statusAppointment === 'COF'
+                                            : appointment?.appointmentId?.statusAppointment === 'COF'
                                                 ? 'Confirmada'
                                                 : 'Completada'}
                                 </p>
@@ -97,9 +97,9 @@ const TurnsList: React.FC = () => {
 
                             {/* Acciones */}
                             <div className="mt-6 space-y-3">
-                                {!appointment.confirmed && (
+                                {!appointment?.confirmed && (
                                     <button
-                                        onClick={() => handleConfirm(appointment._id)}
+                                        onClick={() => handleConfirm(appointment?._id)}
                                         className="w-full py-2 px-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:from-yellow-500 hover:to-yellow-600 transition-all"
                                     >
                                         Confirmar
@@ -112,7 +112,7 @@ const TurnsList: React.FC = () => {
                                     Ver Detalles
                                 </button> */}
                                 <button
-                                    onClick={() => startAppointments(appointment.appointmentId._id)}
+                                    onClick={() => startAppointments(appointment?.appointmentId?._id)}
                                     className="w-full py-2 px-4 bg-gradient-to-r from-blue-400 to-blue-500 text-white font-medium rounded-lg shadow-md hover:from-blue-500 hover:to-blue-600 transition-all"
                                 >
                                     Acceder a la Cita
