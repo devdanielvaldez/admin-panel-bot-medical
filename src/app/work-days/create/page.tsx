@@ -37,7 +37,7 @@ const WorkDayForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3030/api/available-work-days/create",
+        "https://api-jennifer-wkeor.ondigitalocean.app/api/available-work-days/create",
         { dayOfWeek, workHours }
       );
 
@@ -46,7 +46,7 @@ const WorkDayForm = () => {
         setDayOfWeek("");
         setWorkHours([{ startTime: "", endTime: "" }]);
         router
-        .push('/work-days/view')
+          .push('/work-days/view')
       }
     } catch (error) {
       setError("Hubo un error al registrar el día laboral.");
@@ -55,20 +55,44 @@ const WorkDayForm = () => {
 
   return (
     <DefaultLayout>
-      <div className="max-w-2xl mx-auto p-6">
-        <h1 className="text-xl font-bold mb-4">Registrar Días Laborales</h1>
-        {error && <div className="text-red-600 mb-4">{error}</div>}
-        {successMessage && <div className="text-green-600 mb-4">{successMessage}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="dayOfWeek" className="block text-sm font-medium text-gray-700">
+      <div>
+        {/* Encabezado */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+            Registrar Días Laborales
+          </h1>
+          <p className="text-gray-500 dark:text-gray-300 mt-2">
+            Configura los días y horarios de trabajo para tu equipo.
+          </p>
+        </div>
+
+        {/* Mensajes de error o éxito */}
+        {error && (
+          <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-6 shadow-md">
+            {error}
+          </div>
+        )}
+        {successMessage && (
+          <div className="bg-green-100 text-green-600 p-3 rounded-lg mb-6 shadow-md">
+            {successMessage}
+          </div>
+        )}
+
+        {/* Formulario */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Día de la Semana */}
+          <div>
+            <label
+              htmlFor="dayOfWeek"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Día de la Semana
             </label>
             <select
               id="dayOfWeek"
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(e.target.value)}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
             >
               <option value="">Seleccionar...</option>
               <option value="Domingo">Domingo</option>
@@ -81,79 +105,102 @@ const WorkDayForm = () => {
             </select>
           </div>
 
-          <div>
+          {/* Horarios */}
+          <div className="space-y-4">
             {workHours.map((workHour, index) => (
-              <div key={index} className="mb-6">
-                <div className="mb-4">
-                  <label
-                    htmlFor={`startTime-${index}`}
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Hora de Inicio
-                  </label>
-                  <input
-                    type="time"
-                    id={`startTime-${index}`}
-                    value={workHour.startTime}
-                    onChange={(e) =>
-                      setWorkHours(
-                        workHours.map((wh, idx) =>
-                          idx === index ? { ...wh, startTime: e.target.value } : wh
+              <div
+                key={index}
+                className="p-4 border rounded-lg shadow-sm dark:border-gray-700 dark:bg-gray-700"
+              >
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label
+                      htmlFor={`startTime-${index}`}
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Hora de Inicio
+                    </label>
+                    <input
+                      type="time"
+                      id={`startTime-${index}`}
+                      value={workHour.startTime}
+                      onChange={(e) =>
+                        setWorkHours(
+                          workHours.map((wh, idx) =>
+                            idx === index
+                              ? { ...wh, startTime: e.target.value }
+                              : wh
+                          )
                         )
-                      )
-                    }
-                    className="p-2 border border-gray-300 rounded-md w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor={`endTime-${index}`}
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Hora de Fin
-                  </label>
-                  <input
-                    type="time"
-                    id={`endTime-${index}`}
-                    value={workHour.endTime}
-                    onChange={(e) =>
-                      setWorkHours(
-                        workHours.map((wh, idx) =>
-                          idx === index ? { ...wh, endTime: e.target.value } : wh
+                      }
+                      className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={`endTime-${index}`}
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Hora de Fin
+                    </label>
+                    <input
+                      type="time"
+                      id={`endTime-${index}`}
+                      value={workHour.endTime}
+                      onChange={(e) =>
+                        setWorkHours(
+                          workHours.map((wh, idx) =>
+                            idx === index
+                              ? { ...wh, endTime: e.target.value }
+                              : wh
+                          )
                         )
-                      )
-                    }
-                    className="p-2 border border-gray-300 rounded-md w-full"
-                  />
+                      }
+                      className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
                 </div>
                 {workHours.length > 1 && (
                   <button
                     type="button"
                     onClick={() => handleRemoveWorkHour(index)}
-                    className="text-red-500"
+                    className="mt-4 w-full text-red-500 font-medium hover:text-red-600 transition"
                   >
-                    Eliminar
+                    Eliminar Horario
                   </button>
                 )}
               </div>
             ))}
           </div>
 
-
-          <div className="mb-4">
-            <button
-              type="button"
-              onClick={handleAddWorkHour}
-              className="bg-blue-500 text-white p-2 rounded-md"
+          {/* Botón Agregar Horario */}
+          <button
+            type="button"
+            onClick={handleAddWorkHour}
+            className="w-full flex items-center justify-center gap-2 bg-indigo-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-indigo-600 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-5 h-5"
             >
-              + Agregar Horario
-            </button>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            Agregar Horario
+          </button>
 
-          <div className="flex justify-end">
+          {/* Botón Guardar */}
+          <div className="text-right">
             <button
               type="submit"
-              className="bg-green-500 text-white p-2 rounded-md"
+              className="inline-block bg-green-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-green-600 transition"
             >
               Guardar
             </button>

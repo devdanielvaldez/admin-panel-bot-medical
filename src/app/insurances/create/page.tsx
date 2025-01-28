@@ -31,7 +31,7 @@ const InsuranceRegistration: React.FC = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("http://localhost:3030/api/services/list");
+        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/services/list");
         if (response.data.ok) {
           setServices(response.data.services);
         }
@@ -81,7 +81,7 @@ const InsuranceRegistration: React.FC = () => {
     setMessage(null);
 
     try {
-      const response = await axios.post("http://localhost:3030/api/insurances/create", {
+      const response = await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/create", {
         insuranceName,
         contactPhone,
         services: selectedServices,
@@ -107,13 +107,25 @@ const InsuranceRegistration: React.FC = () => {
 
   return (
     <DefaultLayout>
-      <div className="max-w-full mx-4 sm:mx-auto sm:max-w-4xl">
-        <h1 className="text-3xl font-semibold text-left mb-2">Registrar Seguro Médico</h1>
-        <h4 className="text-lg font-normal text-left mb-8">Ingrese los datos solicitados para registrar un seguro médico</h4>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        {/* Encabezado */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
+            Registrar Seguro Médico
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
+            Ingresa los datos para registrar un seguro médico
+          </p>
+        </div>
+
+        {/* Formulario */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Nombre del Seguro */}
           <div>
-            <label htmlFor="insuranceName" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="insuranceName"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Nombre del Seguro
             </label>
             <input
@@ -121,14 +133,18 @@ const InsuranceRegistration: React.FC = () => {
               id="insuranceName"
               value={insuranceName}
               onChange={(e) => setInsuranceName(e.target.value)}
-              className="w-full p-3 border rounded-md"
-              placeholder="Seguro Vida"
+              className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Ej: Seguro Vida"
               required
             />
           </div>
 
+          {/* Teléfono de Contacto */}
           <div>
-            <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="contactPhone"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Teléfono de Contacto
             </label>
             <input
@@ -136,64 +152,76 @@ const InsuranceRegistration: React.FC = () => {
               id="contactPhone"
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              className="w-full p-3 border rounded-md"
+              className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="Ej: 1234567890"
               required
             />
           </div>
 
+          {/* Seleccionar Servicios */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Seleccionar Servicios</label>
-            {services.map((service) => (
-              <div key={service._id} className="flex items-center space-x-4">
-                <input
-                  type="checkbox"
-                  id={`service-${service._id}`}
-                  onChange={(e) =>
-                    e.target.checked
-                      ? handleSelectService(e, service._id)
-                      : setSelectedServices(
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Seleccionar Servicios
+            </label>
+            <div className="space-y-4 mt-4">
+              {services.map((service) => (
+                <div
+                  key={service._id}
+                  className="flex items-center space-x-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-md"
+                >
+                  <input
+                    type="checkbox"
+                    id={`service-${service._id}`}
+                    onChange={(e) =>
+                      e.target.checked
+                        ? handleSelectService(e, service._id)
+                        : setSelectedServices(
                           selectedServices.filter((item) => item.service !== service._id)
                         )
-                  }
-                />
-                <label htmlFor={`service-${service._id}`} className="text-sm text-gray-700">
-                  {service.serviceName} - ${service.serviceWithInsurance}
-                </label>
-                <input
-                  type="number"
-                  placeholder="Cobertura seguro"
-                  className="w-45 p-2 border rounded-md"
-                  value={
-                    selectedServices.find((item) => item.service === service._id)
-                      ?.insurancePrice || ""
-                  }
-                  onChange={(e) =>
-                    handlePriceChange(e, service._id)
-                  }
-                />
-              </div>
-            ))}
+                    }
+                    className="w-5 h-5 text-blue-500 focus:ring-blue-400"
+                  />
+                  <label
+                    htmlFor={`service-${service._id}`}
+                    className="flex-1 text-sm text-gray-700 dark:text-gray-300"
+                  >
+                    {service.serviceName} - ${service.serviceWithInsurance}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Cobertura seguro"
+                    className="w-92 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={
+                      selectedServices.find((item) => item.service === service._id)
+                        ?.insurancePrice || ""
+                    }
+                    onChange={(e) => handlePriceChange(e, service._id)}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Botón de Enviar */}
           <button
             type="submit"
             disabled={loading || selectedServices.length === 0}
-            className={`w-full py-2 px-4 text-white font-semibold rounded-md shadow ${loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600 focus:ring focus:ring-blue-300"
-            }`}
+            className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition-transform transform ${loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600 focus:ring focus:ring-blue-300"
+              }`}
           >
             {loading ? "Registrando..." : "Registrar Seguro"}
           </button>
         </form>
 
+        {/* Mensaje de éxito o error */}
         {message && (
           <div
-            className={`mt-4 p-3 rounded-md text-center ${message.type === "success"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-            }`}
+            className={`mt-6 p-4 rounded-lg text-center transition-all ${message.type === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+              }`}
           >
             {message.text}
           </div>

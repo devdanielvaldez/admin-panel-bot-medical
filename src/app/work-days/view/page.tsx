@@ -26,7 +26,7 @@ const WorkDayTable = () => {
   const fetchWorkDays = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3030/api/available-work-days/list");
+      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/available-work-days/list");
       const data = await response.json();
 
       if (data.ok) {
@@ -48,7 +48,7 @@ const WorkDayTable = () => {
 
   const goToCreate = () => {
     router
-    .push('/work-days/create');
+      .push('/work-days/create');
   }
 
   if (loading) {
@@ -57,27 +57,38 @@ const WorkDayTable = () => {
 
   return (
     <DefaultLayout>
-      <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-        <div className="max-w-full overflow-x-auto">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-3" onClick={goToCreate}>
-        + Registrar Día Laboral
-      </button>
-          <table className="w-full table-auto">
+      <div>
+        <header className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Días Laborales</h2>
+          <button
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium px-4 py-2 rounded-lg shadow-md hover:scale-105 transition-transform"
+            onClick={goToCreate}
+          >
+            + Registrar Día Laboral
+          </button>
+        </header>
+
+        <div className="overflow-hidden rounded-lg shadow-md">
+          <table className="w-full table-auto border-collapse">
             <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                <th className="min-w-[220px] px-4 py-4 font-medium text-black dark:text-white xl:pl-11">Día de la Semana</th>
-                <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">Horario de Trabajo</th>
+              <tr className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white">
+                <th className="px-6 py-4 text-left text-lg font-semibold">Día de la Semana</th>
+                <th className="px-6 py-4 text-left text-lg font-semibold">Horario de Trabajo</th>
               </tr>
             </thead>
             <tbody>
-              {workDays.map((workDay) => (
-                <tr key={workDay._id}>
-                  <td className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
-                    <h5 className="font-medium text-black dark:text-white">{workDay.dayOfWeek}</h5>
+              {workDays.map((workDay, index) => (
+                <tr
+                  key={workDay._id}
+                  className={`transition-colors duration-200 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-700' : 'bg-white dark:bg-gray-800'
+                    }`}
+                >
+                  <td className="border-b border-gray-300 dark:border-gray-700 px-6 py-4">
+                    <h5 className="font-medium text-gray-800 dark:text-gray-100">{workDay.dayOfWeek}</h5>
                   </td>
-                  <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                  <td className="border-b border-gray-300 dark:border-gray-700 px-6 py-4">
                     {workDay.workHours.map((workHour) => (
-                      <p key={workHour._id} className="text-black dark:text-white">
+                      <p key={workHour._id} className="text-gray-700 dark:text-gray-300">
                         {workHour.startTime} - {workHour.endTime}
                       </p>
                     ))}

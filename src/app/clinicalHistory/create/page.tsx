@@ -1,12 +1,15 @@
 'use client';
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 import axios from "axios";
 import PatientInfo from "@/components/PatientInfo";
 import ClinicalHistoryModal from "@/components/MedicalHistoryReportModal/ReportMedicalHistoryModal";
 import withAuth from "@/hooks/useAuth";
+import Notiflix from "notiflix";
+import moment from "moment";
+import { useRouter } from "next/router";
 
 interface ClinicalHistoryFormProps {
     initialData?: ClinicalHistoryData;
@@ -83,29 +86,159 @@ const TagInput: React.FC<{
 
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-600">{label}</label>
-            <div className="flex flex-wrap mt-1">
+            <label className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {label}
+            </label>
+
+            <div className="flex flex-wrap gap-2 mt-2">
                 {tags.map((tag, index) => (
-                    <span key={index} className="bg-indigo-500 text-white rounded-full px-2 py-1 mr-2 mb-2 flex items-center">
+                    <span
+                        key={index}
+                        className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full px-4 py-2 shadow-md transition-transform transform hover:scale-105"
+                    >
                         {tag}
                         <button
                             type="button"
                             onClick={() => handleDelete(tag)}
-                            className="ml-2 text-white"
+                            className="ml-2 text-white font-bold hover:text-gray-200"
                         >
-                            x
+                            &times;
                         </button>
                     </span>
                 ))}
             </div>
+
             <textarea
                 rows={2}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-4 w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-inner focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-100 transition-colors"
                 placeholder="Escribe y presiona Enter para agregar..."
             />
+        </div>
+    );
+};
+
+interface Patient {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    whatsAppNumber: string;
+    address: string;
+    bornDate: string;
+    sex: string;
+}
+
+interface Service {
+    _id: string;
+    serviceName: string;
+    servicePrice: number;
+    serviceWithInsurance: number;
+}
+
+interface Appointment {
+    _id: string;
+    patientId: Patient;
+    patientMotive: string;
+    patientIsInsurante: boolean;
+    dateAppointment: string;
+    dateTimeAppointment: string;
+    statusAppointment: string;
+    services: Service[];
+}
+
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    appointmentData: Appointment[];
+}
+
+const ModalAppointments: React.FC<ModalProps> = ({ isOpen, onClose, appointmentData }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full h-96 overflow-y-auto transition-transform transform scale-100 hover:scale-105">
+                <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Resumen de Citas</h2>
+                {appointmentData.map((appointment) => (
+                    <div key={appointment._id} className="mb-6 border-b pb-4">
+                        <h3 className="font-semibold text-lg text-gray-800">Paciente:</h3>
+                        <p className="text-gray-700">{`${appointment.patientId.firstName} ${appointment.patientId.lastName}`}</p>
+                        <p className="text-gray-600">Teléfono: {appointment.patientId.phoneNumber}</p>
+                        <p className="text-gray-600">Motivo: {appointment.patientMotive}</p>
+                        <p className="text-gray-600">Fecha de Cita: {new Date(appointment.dateAppointment).toLocaleDateString()}</p>
+                        <p className="text-gray-600">Hora de Cita: {appointment.dateTimeAppointment}</p>
+                        <p className="text-gray-600">Estado: {appointment.statusAppointment}</p>
+
+                        <h3 className="font-semibold text-lg text-gray-800 mt-4">Servicios:</h3>
+                        <ul className="list-disc list-inside">
+                            {appointment.services.map((service) => (
+                                <li key={service._id} className="text-gray-600">
+                                    {service.serviceName}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+                <button
+                    onClick={onClose}
+                    className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+                >
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    );
+};
+
+interface TestResult {
+    _id: string;
+    patient: string;
+    testName: string;
+    testDate: string;
+    result: string;
+    description: string;
+    pdfPassword: string;
+}
+
+interface TestResultsModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    testResults: TestResult[];
+}
+
+const TestResultsModal: React.FC<TestResultsModalProps> = ({ isOpen, onClose, testResults }) => {
+    if (!isOpen) return null;
+
+    const formatDate = (date: string) => {
+        return moment(date).format('DD-MM-YYYY');
+    }
+
+    return (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full h-96 overflow-y-auto transition-transform transform scale-100 hover:scale-105">
+                <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Resultados de Pruebas</h2>
+                {testResults.map((result) => (
+                    <div key={result._id} className="mb-6 border-b pb-4">
+                        <h3 className="font-semibold text-lg text-gray-800">Prueba: {result.testName}</h3>
+                        <p className="text-gray-600">Fecha de Prueba: {formatDate(result.testDate)}</p>
+                        <p className="text-gray-600">Descripción: {result.description || 'Sin descripción'}</p>
+                        <p className="text-gray-600">Resultado:
+                            <a href={result.result} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                Ver Resultado
+                            </a>
+                        </p>
+                    </div>
+                ))}
+                <button
+                    onClick={onClose}
+                    className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+                >
+                    Cerrar
+                </button>
+            </div>
         </div>
     );
 };
@@ -171,9 +304,16 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
         phoneNumber: '',
         address: '',
         sex: '',
+        id: ''
     });
     const [report, setReport] = useState<any>(null);
     const [isModalOpen, setisModalOpen] = useState<boolean>(false);
+
+    const [patientHistoryDetails, setPatientHistoryDetails] = useState<any>();
+    const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+    const [isOpenModalResult, setIsOpenModalResult] = useState<boolean>(false);
+    const [patientInfo, setPatientInfo] = useState<any>();
+
 
     const handleCloseModal = () => {
         setisModalOpen(false);
@@ -183,17 +323,21 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
         delete embedding.embedding;
         delete embedding.patientId.embedding;
         const response = await axios
-            .post('http://localhost:3030/api/' + 'clinical/history/analyze', {
+            .post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'clinical/history/analyze', {
                 embedding: embedding
             });
         setReport(response.data.analysis);
+    }
+
+    const getAppointmentsAndHistory = (data: any) => {
+        setIsOpenModal(true);
     }
 
     useEffect(() => {
         setPatientId(searchParams.get('id') || "");
         const fetchHistoryClinical = async () => {
             try {
-                const response = await axios.get('http://localhost:3030/api/' + 'clinical/history/' + searchParams.get('id'));
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'clinical/history/' + searchParams.get('id'));
                 if (response.data.clinicalHistory.embedding) {
                     getAnalyzes(response.data.clinicalHistory);
                 }
@@ -250,7 +394,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
 
         const fetchPatient = async () => {
             const response = await axios
-                .get('http://localhost:3030/api/' + 'patient/find/' + searchParams.get('id'));
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'patient/find/' + searchParams.get('id'));
             const data = response.data.data;
             setPatientData({
                 firstName: data.firstName,
@@ -259,10 +403,28 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
                 phoneNumber: data.phoneNumber,
                 address: data.address,
                 sex: data.sex,
+                id: data._id
             })
-            console.log(response.data);
+            console.log('entro en 1',response.data);
+            fetchPatientDetails(data._id);
         }
 
+        const fetchPatientDetails = async (patientId: string) => {
+            const response = await axios
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/details/' + patientId);
+            setPatientHistoryDetails(response.data.data);
+            console.log('patient --->', response.data.data)
+        }
+        const fetchDetails = async (id: string) => {
+            console.log('entro', id);
+            const response = await axios
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/' + id);
+            // fetchPatientDetails(response.data.data.patientId._id);
+            // setPatientInfo(response.data.data);
+            console.log('resp --->', response.data.data);
+        };
+
+        // fetchDetails();
         fetchHistoryClinical();
         fetchPatient();
     }, []);
@@ -277,38 +439,51 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
             const updatedFormData = { ...prev };
             let currentSection: any = updatedFormData;
 
-            // Iterar a través de la sección y crearla si no existe
             for (let i = 0; i < section.length; i++) {
                 if (!currentSection[section[i]]) {
-                    currentSection[section[i]] = {}; // Inicializa la sección si no existe
+                    currentSection[section[i]] = {};
                 }
                 currentSection = currentSection[section[i]];
             }
 
-            // Asegúrate de que el campo exista antes de asignar el valor
             if (!currentSection[field]) {
-                currentSection[field] = ""; // Inicializa el campo si no existe
+                currentSection[field] = "";
             }
 
-            currentSection[field] = value; // Asigna el valor
+            currentSection[field] = value;
 
             return updatedFormData;
         });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
+        Notiflix.Loading.circle({
+            svgSize: '30px'
+        });
         e.preventDefault();
         try {
-            await axios.post('http://localhost:3030/api/' + 'clinical/history/create', {
+            await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'clinical/history/create', {
                 patientId,
                 ...formData,
             });
-            alert("Historia clínica guardada exitosamente.");
+            Notiflix.Notify.success("Datos guardados correctamente");
         } catch (err) {
             console.error(err);
-            alert("Error al guardar la historia clínica.");
+            Notiflix.Notify.failure("Error al guardar la historia clínica.");
+        } finally {
+            Notiflix.Loading.remove();
         }
     };
+
+    const returnAge = (date: string) => {
+        console.log(date);
+        return moment().diff(moment(date, ["YYYY-MM-DD", "DD-MM-YYYY"]), 'years');
+
+    };
+
+    const formatDate = (date: string) => {
+        return moment(date).format('DD-MM-YYYY');
+    }
 
     const tabs = [
         { key: "personal", label: "Antecedentes Personales" },
@@ -321,16 +496,37 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
 
     return (
         <DefaultLayout>
+            <ModalAppointments isOpen={isOpenModal} appointmentData={patientHistoryDetails?.appointment} onClose={() => setIsOpenModal(false)} />
+            <TestResultsModal isOpen={isOpenModalResult} testResults={patientHistoryDetails?.results} onClose={() => setIsOpenModalResult(false)} />
             <div className="items-center justify-center p-6">
-                <button
-                    onClick={() => setisModalOpen(true)}
-                    className={`px-4 py-2 rounded mb-4 
-        ${report === null ? 'bg-gray-400 text-gray-200 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-600'}`}
-                    disabled={report === null}
-                >
-                    Mostrar Reporte
-                </button>
+                <div className="flex justify-center mb-6">
+                    <button
+                        onClick={() => setisModalOpen(true)}
+                        className={`px-6 py-3 rounded-lg font-semibold shadow-lg transition-transform transform hover:scale-105 ${report === null
+                            ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                            }`}
+                        disabled={report === null}
+                    >
+                        Mostrar Reporte
+                    </button>
+                </div>
+
                 <PatientInfo patientData={patientData} />
+
+                <div className="mt-3 mb-3">
+                    <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                        <p className="text-sm text-gray-600">{returnAge(patientData?.bornDate)} años • Fecha de nacimiento • {formatDate(patientData?.bornDate)}</p>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                        <button className="w-full text-left px-4 py-2 bg-gray-100 rounded-md border border-gray-200 hover:bg-gray-200" onClick={() => getAppointmentsAndHistory(patientHistoryDetails?.appointment)}>
+                            Historial del paciente y citas • {patientHistoryDetails?.appointment?.length}
+                        </button>
+                        <button className="w-full text-left px-4 py-2 bg-gray-100 rounded-md border border-gray-200 hover:bg-gray-200" onClick={() => setIsOpenModalResult(true)}>
+                            Documentos y archivos • {patientHistoryDetails?.results?.length}
+                        </button>
+                    </div>
+                </div>
 
                 <div className="bg-white shadow-lg rounded-lg w-full max-w-6xl p-8">
                     <h1 className="text-2xl font-semibold text-gray-800 mb-6">
@@ -536,10 +732,10 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
                             </div>
                         )}
 
-                        <div className="mt-6">
+                        <div className="mt-10 text-center">
                             <button
                                 type="submit"
-                                className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                className="w-full max-w-xs mx-auto px-6 py-3 bg-indigo-500 text-white rounded-lg shadow-lg font-semibold hover:bg-indigo-600 transition-transform transform hover:scale-105 focus:ring-2 focus:ring-indigo-400"
                             >
                                 Guardar Historia Clínica
                             </button>

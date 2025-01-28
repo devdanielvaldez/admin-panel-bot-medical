@@ -25,13 +25,13 @@ const TurnsList: React.FC = () => {
     }, []);
 
     const fetchAppointments = async () => {
-        const response = await axios.get('http://localhost:3030/api/' + 'turns/all');
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/all');
         console.log(response.data.data);
         setAppointments(response.data.data);
     };
 
     const handleConfirm = async (id: string) => {
-        const response = await axios.get('http://localhost:3030/api/' + 'turns/confirm/' + id);
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/confirm/' + id);
         Notiflix.Notify.success('Turno Confirmado');
         fetchAppointments();
         console.log(response)
@@ -42,14 +42,14 @@ const TurnsList: React.FC = () => {
     }
 
     const handleInProgress = async (id: string) => {
-        const response = await axios.get('http://localhost:3030/api/' + 'turns/in_progress/' + id);
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/in_progress/' + id);
         Notiflix.Notify.success('Turno En Progreso');
         fetchAppointments();
         console.log(response)
     };
 
     const handleComplete = async (id: string) => {
-        const response = await axios.get('http://localhost:3030/api/' + 'turns/complete/' + id);
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/complete/' + id);
         Notiflix.Notify.success('Turno Completado');
         fetchAppointments();
         console.log(response)
@@ -61,45 +61,59 @@ const TurnsList: React.FC = () => {
 
     return (
         <DefaultLayout>
-            <div className="min-h-screen bg-gray-100 p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {appointments.map((appointment) => (
                         <div
                             key={appointment._id}
-                            className="bg-white shadow-md rounded-lg p-4 flex flex-col justify-between"
+                            className="bg-white dark:bg-gray-800 shadow-xl rounded-3xl p-6 flex flex-col justify-between transform transition-all hover:scale-105 hover:shadow-2xl"
                         >
+                            {/* Información del Paciente */}
                             <div>
-                                <h2 className="text-xl font-bold">{appointment.appointmentId.patientId.firstName} {appointment.appointmentId.patientId.lastName}</h2>
-                                <p className="text-gray-600">{appointment.appointmentId.patientMotive}</p>
+                                <h2 className="text-2xl font-extrabold text-gray-800 dark:text-white">
+                                    {appointment.appointmentId.patientId.firstName}{' '}
+                                    {appointment.appointmentId.patientId.lastName}
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-300 mt-2">
+                                    {appointment.appointmentId.patientMotive}
+                                </p>
                                 <p
-                                    className={`mt-2 text-sm font-medium ${appointment.appointmentId.statusAppointment === "PE"
-                                            ? "text-yellow-500"
-                                            : appointment.appointmentId.statusAppointment === "En Progreso"
-                                                ? "text-blue-500"
-                                                : "text-green-500"
+                                    className={`mt-4 inline-block text-sm font-semibold px-3 py-1 rounded-full ${appointment.appointmentId.statusAppointment === 'PE'
+                                            ? 'bg-yellow-100 text-yellow-600'
+                                            : appointment.appointmentId.statusAppointment === 'En Progreso'
+                                                ? 'bg-blue-100 text-blue-600'
+                                                : 'bg-green-100 text-green-600'
                                         }`}
                                 >
-                                    Estado: {appointment.appointmentId.statusAppointment == 'PE' ? 'Pendiente' : appointment.appointmentId.statusAppointment == 'IN' ? 'En Progreso' : appointment.appointmentId.statusAppointment == 'COF' ? 'Confirmada' : 'Completada'}
+                                    {appointment.appointmentId.statusAppointment === 'PE'
+                                        ? 'Pendiente'
+                                        : appointment.appointmentId.statusAppointment === 'IN'
+                                            ? 'En Progreso'
+                                            : appointment.appointmentId.statusAppointment === 'COF'
+                                                ? 'Confirmada'
+                                                : 'Completada'}
                                 </p>
                             </div>
-                            <div className="mt-4 space-y-2">
+
+                            {/* Acciones */}
+                            <div className="mt-6 space-y-3">
                                 {!appointment.confirmed && (
                                     <button
                                         onClick={() => handleConfirm(appointment._id)}
-                                        className="w-full bg-yellow-500 text-white py-2 rounded-md hover:bg-yellow-600"
+                                        className="w-full py-2 px-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:from-yellow-500 hover:to-yellow-600 transition-all"
                                     >
                                         Confirmar
                                     </button>
                                 )}
-                                <button
+                                {/* <button
                                     onClick={() => handleViewDetails(appointment._id)}
-                                    className="w-full bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400"
+                                    className="w-full py-2 px-4 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 font-medium rounded-lg shadow-md hover:from-gray-400 hover:to-gray-500 transition-all"
                                 >
                                     Ver Detalles
-                                </button>
+                                </button> */}
                                 <button
                                     onClick={() => startAppointments(appointment.appointmentId._id)}
-                                    className="w-full bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400"
+                                    className="w-full py-2 px-4 bg-gradient-to-r from-blue-400 to-blue-500 text-white font-medium rounded-lg shadow-md hover:from-blue-500 hover:to-blue-600 transition-all"
                                 >
                                     Acceder a la Cita
                                 </button>
@@ -109,6 +123,7 @@ const TurnsList: React.FC = () => {
                 </div>
             </div>
         </DefaultLayout>
+
     );
 };
 

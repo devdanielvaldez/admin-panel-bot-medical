@@ -38,7 +38,7 @@ const BlockDatePage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3030/api/block-dates/create", {
+      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/block-dates/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,7 +54,7 @@ const BlockDatePage = () => {
         setEndTime("");
         setBlockAllDay(false);
         router
-        .push('/block-dates/view')
+          .push('/block-dates/view')
       } else {
         const errorData = await response.json();
         setMessage({
@@ -71,22 +71,37 @@ const BlockDatePage = () => {
 
   return (
     <DefaultLayout>
-      <div className="max-w-xl mx-auto my-10 p-5">
-        <h2 className="text-2xl font-semibold mb-5">Bloquear Fecha y Horario</h2>
+      <div>
+        {/* Encabezado */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+            Bloquear Fecha y Horario
+          </h2>
+          <p className="text-gray-500 dark:text-gray-300 mt-2">
+            Selecciona una fecha y el horario que deseas bloquear.
+          </p>
+        </div>
 
+        {/* Mensajes */}
         {message && (
           <div
-            className={`mb-4 text-center ${
-              message.type === "success" ? "text-green-600" : "text-red-600"
-            }`}
+            className={`mb-6 text-center p-3 rounded-lg ${message.type === "success"
+                ? "bg-green-100 text-green-600"
+                : "bg-red-100 text-red-600"
+              }`}
           >
             {message.text}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="dateBlock" className="block text-sm font-medium text-gray-700">
+        {/* Formulario */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Campo Fecha */}
+          <div>
+            <label
+              htmlFor="dateBlock"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Fecha
             </label>
             <input
@@ -95,14 +110,18 @@ const BlockDatePage = () => {
               value={dateBlock}
               onChange={(e) => setDateBlock(e.target.value)}
               required
-              className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+              className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
+          {/* Campos Horarios */}
           {!blockAllDay && (
-            <>
-              <div className="mb-4">
-                <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label
+                  htmlFor="startTime"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Hora de Inicio (HH:mm)
                 </label>
                 <input
@@ -111,12 +130,15 @@ const BlockDatePage = () => {
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   required
-                  className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                  className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                 />
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+              <div>
+                <label
+                  htmlFor="endTime"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Hora de Fin (HH:mm)
                 </label>
                 <input
@@ -125,27 +147,37 @@ const BlockDatePage = () => {
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   required
-                  className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                  className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                 />
               </div>
-            </>
+            </div>
           )}
 
-          <div className="mb-4 flex items-center">
+          {/* Checkbox Bloquear Todo el Día */}
+          <div className="flex items-center">
             <input
               type="checkbox"
               id="blockAllDay"
               checked={blockAllDay}
               onChange={() => setBlockAllDay(!blockAllDay)}
-              className="mr-2"
+              className="mr-2 w-5 h-5 text-indigo-500 border-gray-300 focus:ring-indigo-500 rounded"
             />
-            <label htmlFor="blockAllDay" className="text-sm text-gray-700">Bloquear todo el día</label>
+            <label
+              htmlFor="blockAllDay"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Bloquear todo el día
+            </label>
           </div>
 
+          {/* Botón de Enviar */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
+            className={`w-full py-3 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${loading
+                ? "bg-indigo-300 cursor-not-allowed"
+                : "bg-indigo-500 hover:bg-indigo-600"
+              }`}
           >
             {loading ? "Cargando..." : "Bloquear Fecha"}
           </button>

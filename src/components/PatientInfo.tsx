@@ -15,7 +15,8 @@ interface PatientInfoProps {
 const PatientInfo: React.FC<PatientInfoProps> = ({ patientData }) => {
 
     const returnAge = (date: string) => {
-        return moment().diff(moment(date, "YYYY-MM-DD"), 'years');
+        return moment().diff(moment(date, ["YYYY-MM-DD", "DD-MM-YYYY"]), 'years');
+
     };
 
     const formatDate = (date: string) => {

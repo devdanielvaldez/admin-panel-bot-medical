@@ -5,15 +5,17 @@ import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userData, setUserData] = useState<any>();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = () => {
       axios
-      .get('http://localhost:3030/api/auth/me', {
+      .get('https://api-jennifer-wkeor.ondigitalocean.app/api/auth/me', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
         }
@@ -27,6 +29,11 @@ const DropdownUser = () => {
     fetchUserData();
   }, []);
 
+  const logout = () => {
+    localStorage.removeItem('accessToken');
+    router.push('/');
+  }
+
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
       <Link
@@ -38,7 +45,7 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             {userData?.userGeneral.firstName} {userData?.userGeneral.lastName}
           </span>
-          <span className="block text-xs">{userData.username}</span>
+          <span className="block text-xs">{userData?.username}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -128,7 +135,7 @@ const DropdownUser = () => {
               </Link>
             </li>
           </ul>
-          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" onClick={logout}>
             <svg
               className="fill-current"
               width="22"
