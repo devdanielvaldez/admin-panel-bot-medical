@@ -21,7 +21,11 @@ const TurnsList: React.FC = () => {
     const router = useRouter();
 
     useEffect(() => {
-        fetchAppointments();
+        const interval = setInterval(() => {
+            fetchAppointments();
+        }, 3000); // Se ejecuta cada 3 segundos
+    
+        return () => clearInterval(interval); // Limpia el intervalo al desmontar el componente
     }, []);
 
     const fetchAppointments = async () => {
