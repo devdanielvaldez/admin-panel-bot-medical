@@ -17,19 +17,22 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/metrics/")
-      .then((res) => res.json())
-      .then((data) => {
-        setMetrics(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching metrics:", error);
-        setLoading(false);
-      });
+    const fetchMetrics = () => {
+        fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/metrics/")
+        .then((res) => res.json())
+        .then((data) => {
+          setMetrics(data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching metrics:", error);
+          setLoading(false);
+        });
+    }
 
     const interval = setInterval(() => {
       fetchAppointments();
+      fetchMetrics();
     }, 3000);
     return () => clearInterval(interval);
   }, []);
