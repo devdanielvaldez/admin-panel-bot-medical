@@ -4,6 +4,7 @@ import React, { useState, useEffect, FormEvent } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import withAuth from "@/hooks/useAuth";
+import { useSearchParams } from "next/navigation";
 
 interface Message {
   type: "success" | "error";
@@ -18,6 +19,8 @@ interface Service {
 }
 
 const InsuranceRegistration: React.FC = () => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const [insuranceName, setInsuranceName] = useState<string>("");
   const [contactPhone, setContactPhone] = useState<string>("");
   const [services, setServices] = useState<Service[]>([]);
@@ -42,6 +45,31 @@ const InsuranceRegistration: React.FC = () => {
 
     fetchServices();
   }, []);
+
+  useEffect(() => {
+    if (id) {
+      const fetchInsurance = async () => {
+        try {
+          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/${id}`);
+          if (response.data.ok) {
+            console.log(response.data)
+            const insurance = response.data.data;
+            setInsuranceName(insurance.insuranceName);
+            setContactPhone(insurance.contactPhone);
+            setSelectedServices(
+              insurance.services.map((s: any) => ({
+                service: s.service._id,
+                insurancePrice: s.insurancePrice.toString()
+              }))
+            );
+          }
+        } catch (error) {
+          console.error("Error al obtener los datos del seguro:", error);
+        }
+      };
+      fetchInsurance();
+    }
+  }, [id]);
 
   // Maneja la selección de servicios
   const handleSelectService = (
@@ -81,20 +109,24 @@ const InsuranceRegistration: React.FC = () => {
     setMessage(null);
 
     try {
-      const response = await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/create", {
-        insuranceName,
-        contactPhone,
-        services: selectedServices,
-      });
-
-      setMessage({
-        type: "success",
-        text: "¡Seguro médico registrado con éxito!",
-      });
-
-      setInsuranceName("");
-      setContactPhone("");
-      setSelectedServices([]);
+      if (id) {
+        await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/update/${id}`, {
+          insuranceName,
+          contactPhone,
+          services: selectedServices,
+        });
+        setMessage({ type: "success", text: "¡Seguro médico actualizado con éxito!" });
+      } else {
+        await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/create", {
+          insuranceName,
+          contactPhone,
+          services: selectedServices,
+        });
+        setInsuranceName("");
+        setContactPhone("");
+        setSelectedServices([]);
+        setMessage({ type: "success", text: "¡Seguro médico registrado con éxito!" });
+      }
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -172,6 +204,7 @@ const InsuranceRegistration: React.FC = () => {
                   <input
                     type="checkbox"
                     id={`service-${service._id}`}
+                    checked={selectedServices.some((s) => s.service === service._id)}
                     onChange={(e) =>
                       e.target.checked
                         ? handleSelectService(e, service._id)
