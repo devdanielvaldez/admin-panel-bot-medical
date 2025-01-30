@@ -34,11 +34,11 @@ const ReportsPage = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const allResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/all");
-        const insuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/by-insurance");
-        const serviceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/by-service");
-        const withInsuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/with-insurance");
-        const withoutInsuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/without-insurance");
+        const allResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/accounting/reports/all");
+        const insuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/accounting/reports/by-insurance");
+        const serviceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/accounting/reports/by-service");
+        const withInsuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/accounting/reports/with-insurance");
+        const withoutInsuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/accounting/reports/without-insurance");
 
         setAllReports(allResponse.data);
         setInsuranceReports(insuranceResponse.data);

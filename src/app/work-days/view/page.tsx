@@ -26,7 +26,7 @@ const WorkDayTable = () => {
   const fetchWorkDays = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/available-work-days/list");
+      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/available-work-days/list");
       const data = await response.json();
 
       if (data.ok) {

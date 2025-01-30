@@ -23,7 +23,7 @@ const ServiceRegistration: React.FC = () => {
         setMessage(null);
 
         try {
-            const response = await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/services/create", {
+            const response = await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/services/create", {
                 serviceName,
                 servicePrice: parseFloat(servicePrice), // Asegurarse de enviar el precio como número
                 serviceWithInsurance: parseFloat(servicePriceInsurance), // Asegurarse de enviar el precio como número

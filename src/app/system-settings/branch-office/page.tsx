@@ -15,7 +15,7 @@ const BranchOfficeView = () => {
     const fetchResults = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/branch-office/list");
+            const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/branch-office/list");
             const data = response.data;
             setBranchList(data.branchOffices);
 

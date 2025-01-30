@@ -38,7 +38,7 @@ const BlockDatePage = () => {
     };
 
     try {
-      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/block-dates/create", {
+      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/block-dates/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
