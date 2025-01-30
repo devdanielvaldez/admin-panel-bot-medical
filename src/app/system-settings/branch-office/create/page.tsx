@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useMask } from '@react-input/mask';
@@ -158,6 +158,7 @@ export default function CreateBranchOffice() {
 
     return (
         <DefaultLayout>
+            <Suspense fallback={<div>Cargando...</div>}>
             <div className="relative flex flex-col">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -207,6 +208,7 @@ export default function CreateBranchOffice() {
                     </form>
                 </motion.div>
             </div>
+            </Suspense>
         </DefaultLayout>
     );
 }
