@@ -51,6 +51,7 @@ const SignIn: React.FC = () => {
           console.log(res.data.token);
           localStorage.setItem('accessToken', res.data.token);
           router.push("/appointments/view");
+          
         })
         .catch((err) => {
           Notiflix.Loading.remove();
