@@ -103,6 +103,10 @@ const menuGroups = [
           {
             label: "Servicios",
             route: "/services/view"
+          },
+          {
+            label: "Consultorios",
+            route: "/system-settings/branch-office"
           }
         ]
 

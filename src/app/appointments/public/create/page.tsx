@@ -12,6 +12,7 @@ import Calendar from '@/components/Calendar';
 import moment from 'moment';
 import Select from 'react-select';
 import InvoiceModal from '@/components/InvoceModal/Invoce';
+import Notiflix from 'notiflix';
 
 // Firebase Configuración
 const firebaseConfig = {
@@ -59,12 +60,23 @@ const AppointmentsPublicPage = () => {
     const [isModalOpen, setisModalOpen] = useState<boolean>(false);
     const [invoiceData, setinvoiceData] = useState<any>();
     const [popupVisible, setPopupVisible] = useState(false);
+    const [todayAvailable, setTodayAvailable] = useState<boolean>(true);
 
-    // Cargar los días habilitados desde el servicio
     useEffect(() => {
+        const fetchAvailableAppointments = async () => {
+            try {
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/'+ 'appointments/check/availability');
+                if(response.data.ok == false) {
+                    setTodayAvailable(false);
+                }
+                console.log(response.data);
+            } catch(err) {
+                console.error('Error fetching available appointments:', err);
+            }
+        }
         const fetchAvailableDays = async () => {
             try {
-                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/'+ 'available-work-days/list');
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'available-work-days/list');
                 if (response.data.ok) {
                     const days = response.data.availableWorkDays.map((day: any) => day.dayOfWeek);
                     setAvailableDays(days);
@@ -96,6 +108,7 @@ const AppointmentsPublicPage = () => {
             console.log(response.data.services);
         }
 
+        fetchAvailableAppointments();
         fetchAvailableDays();
         fetchInsurances();
         fetchServices();
@@ -230,6 +243,15 @@ const AppointmentsPublicPage = () => {
     }
 
     const handleDateSelection = async (selectedDate: string | null) => {
+        if (todayAvailable == false && (selectedDate == moment().format('YYYY-MM-DD'))) {
+            return Notiflix.Report.failure(
+                'NO POSEEMOS CITAS DISPONIBLES',
+                'Lamentamos informarle que en el día de hoy no poseemos citas disponibles, por favor agende en otra fecha.',
+                'Ok',
+                () => {
+                    location.reload();
+                });
+        }
         console.log(selectedDate);
         if (selectedDate) {
             setFormData((prevFormData) => ({
@@ -448,12 +470,12 @@ const AppointmentsPublicPage = () => {
                         </div>
 
                         <div>
-                        <label className="block text-sm font-medium">Sexo</label>
-                        <select name="sex" id="sex" value={formData.sex} required onChange={handleChange} disabled={isDisabled} className="w-full p-3 border rounded-md">
-                            <option value="" selected disabled hidden>Seleccione su sexo</option>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
-                        </select>
+                            <label className="block text-sm font-medium">Sexo</label>
+                            <select name="sex" id="sex" value={formData.sex} required onChange={handleChange} disabled={isDisabled} className="w-full p-3 border rounded-md">
+                                <option value="" selected disabled hidden>Seleccione su sexo</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
                         </div>
                     </div>
 
