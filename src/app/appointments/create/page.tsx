@@ -13,6 +13,7 @@ import moment from 'moment';
 import Select from 'react-select';
 import InvoiceModal from '@/components/InvoceModal/Invoce';
 import withAuth from '@/hooks/useAuth';
+import Notiflix from 'notiflix';
 
 // Firebase Configuración
 const firebaseConfig = {
@@ -62,6 +63,17 @@ const AppointmentsPage = () => {
 
     // Cargar los días habilitados desde el servicio
     useEffect(() => {
+        // const fetchAvailableAppointments = async () => {
+        //     try {
+        //         const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/'+ 'appointments/check/availability');
+        //         if(response.data.ok == false) {
+        //             Notiflix.Report.failure('CITAS LLENAS', 'Lamentamos informarle que ya no poseemos espacio disponible para le día de hoy.')
+        //         }
+        //         console.log(response.data);
+        //     } catch(err) {
+        //         console.error('Error fetching available appointments:', err);
+        //     }
+        // }
         const fetchAvailableDays = async () => {
             try {
                 const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/'+ 'available-work-days/list');
@@ -95,7 +107,7 @@ const AppointmentsPage = () => {
             setServiceList(formattedServices);
             console.log(response.data.services);
         }
-
+        // fetchAvailableAppointments();
         fetchAvailableDays();
         fetchInsurances();
         fetchServices();
