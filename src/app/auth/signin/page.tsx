@@ -40,7 +40,7 @@ const SignIn: React.FC = () => {
       Notiflix.Loading.circle({
         svgSize: '30px'
       });
-      // await signInWithEmailAndPassword(auth, email, password);
+
       await axios
         .post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'auth/login', {
           username: email,
