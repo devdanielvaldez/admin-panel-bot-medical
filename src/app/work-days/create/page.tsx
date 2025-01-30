@@ -37,7 +37,7 @@ const WorkDayForm = () => {
 
     try {
       const response = await axios.post(
-        "https://api-jennifer-wkeor.ondigitalocean.app/api/available-work-days/create",
+        "https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/available-work-days/create",
         { dayOfWeek, workHours }
       );
 

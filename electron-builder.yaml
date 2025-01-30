@@ -1,5 +1,5 @@
-appId: "com.sgp.oficial"
-productName: "SGP"
+appId: "com.medisuite.oficial"
+productName: "Medi-Suite"
 copyright: "Copyright (c) 2025 DarkInnovations"
 win:
   target: [ "dir", "portable", "zip" ]

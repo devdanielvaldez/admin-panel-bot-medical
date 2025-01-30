@@ -8,7 +8,7 @@ import { Metadata } from "next";
 // import NotificationComponent from "./notifications";
 
 export const metadata: Metadata = {
-  title: "SGP",
+  title: "MediSuite",
   description: "Sistema de Gestión de Pacientes - v0.1",
   generator: "Next.js",
   manifest: "/manifest.json",

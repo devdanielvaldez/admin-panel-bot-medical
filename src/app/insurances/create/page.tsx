@@ -34,7 +34,7 @@ const InsuranceRegistration: React.FC = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/services/list");
+        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/services/list");
         if (response.data.ok) {
           setServices(response.data.services);
         }
@@ -50,7 +50,7 @@ const InsuranceRegistration: React.FC = () => {
     if (id) {
       const fetchInsurance = async () => {
         try {
-          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/${id}`);
+          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/insurances/${id}`);
           if (response.data.ok) {
             console.log(response.data)
             const insurance = response.data.data;
@@ -110,14 +110,14 @@ const InsuranceRegistration: React.FC = () => {
 
     try {
       if (id) {
-        await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/update/${id}`, {
+        await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/insurances/update/${id}`, {
           insuranceName,
           contactPhone,
           services: selectedServices,
         });
         setMessage({ type: "success", text: "¡Seguro médico actualizado con éxito!" });
       } else {
-        await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/create", {
+        await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/insurances/create", {
           insuranceName,
           contactPhone,
           services: selectedServices,

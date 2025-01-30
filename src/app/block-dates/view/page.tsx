@@ -16,7 +16,7 @@ const BlockedDatesPage = () => {
   // Función para obtener las fechas bloqueadas
   const fetchBlockedDates = async () => {
     try {
-      const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'block-dates/list');
+      const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/' + 'block-dates/list');
       setBlockedDates(response.data.blockedDates);
     } catch (err) {
       setError('Error al cargar las fechas bloqueadas.');
@@ -31,7 +31,7 @@ const BlockedDatesPage = () => {
       const confirmed = confirm('¿Estás seguro de que deseas eliminar esta fecha bloqueada?');
       if (!confirmed) return;
 
-      await axios.delete(`https://api-jennifer-wkeor.ondigitalocean.app/api/block-dates/delete/${id}`);
+      await axios.delete(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/block-dates/delete/${id}`);
       setBlockedDates((prevDates) => prevDates.filter((date) => date._id !== id));
     } catch (err) {
       setError('Error al eliminar la fecha bloqueada.');

@@ -156,7 +156,7 @@ const AppointmentTable = () => {
 
   const changeStatusToCA = async (appointmentId: string) => {
     try {
-      const response = await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/change-status/ca/${appointmentId}`);
+      const response = await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/appointments/change-status/ca/${appointmentId}`);
       if (response.data.ok) {
         alert("Estado cambiado a 'CA' (Cancelada)");
         fetchAppointments();
@@ -171,7 +171,7 @@ const AppointmentTable = () => {
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/all");
+      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/appointments/all");
       const data = await response.json();
 
       if (data.ok) {
