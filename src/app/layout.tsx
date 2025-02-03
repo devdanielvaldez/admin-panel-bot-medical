@@ -32,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <title>MedicalSuite - Gianna Castillo</title>
       {/* <link rel="manifest" href="manifest.json" /> */}
       </head>
       <body suppressHydrationWarning={true}>
