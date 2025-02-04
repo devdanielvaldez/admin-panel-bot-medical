@@ -72,32 +72,32 @@ const AppointmentTable = () => {
                 </div>
                 <div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium">Teléfono:</p>
-                  <p className="text-gray-700 dark:text-gray-300">{appointment.phoneNumber}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{appointment?.phoneNumber}</p>
                 </div>
                 <div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium">WhatsApp:</p>
-                  <p className="text-gray-700 dark:text-gray-300">{appointment.whatsAppNumber}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{appointment?.whatsAppNumber}</p>
                 </div>
                 <div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium">Motivo:</p>
-                  <p className="text-gray-700 dark:text-gray-300">{appointment.patientMotive}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{appointment?.patientMotive}</p>
                 </div>
                 <div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium">Aseguradora:</p>
-                  <p className="text-gray-700 dark:text-gray-300">{appointment.insuranceMake.insuranceName || '-'}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{appointment?.insuranceMake?.insuranceName || '-'}</p>
                 </div>
                 <div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium">Identificación:</p>
-                  <p className="text-gray-700 dark:text-gray-300">{appointment.identification || '-'}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{appointment?.identification || '-'}</p>
                 </div>
                 <div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium">Dirección:</p>
-                  <p className="text-gray-700 dark:text-gray-300">{appointment.address}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{appointment?.address}</p>
                 </div>
                 <div>
                   <p className="text-gray-800 dark:text-gray-200 font-medium">Fecha de Cita:</p>
                   <p className="text-gray-700 dark:text-gray-300">
-                    {convertDate(appointment.dateAppointment)} {appointment.dateTimeAppointment}
+                    {convertDate(appointment.dateAppointment)} {appointment?.dateTimeAppointment}
                   </p>
                 </div>
                 <div>
@@ -117,8 +117,8 @@ const AppointmentTable = () => {
                   <h3 className="text-gray-800 dark:text-gray-200 font-medium mb-2">Imagen del Seguro:</h3>
                   <div className="flex justify-center">
                     <img
-                      src={appointment.insuranceImage}
-                      alt={appointment.insuranceMake.insuranceName}
+                      src={appointment?.insuranceImage}
+                      alt={appointment?.insuranceMake?.insuranceName}
                       className="rounded-lg shadow-lg max-h-64 object-contain cursor-pointer transition-transform duration-300 hover:scale-105"
                       onClick={() => setShowImageViewer(true)}
                     />
@@ -144,7 +144,7 @@ const AppointmentTable = () => {
             onClick={() => setShowImageViewer(false)}
           >
             <img
-              src={appointment.insuranceImage}
+              src={appointment?.insuranceImage}
               alt="Seguro"
               className="rounded-lg max-h-[90%] max-w-[90%] object-contain"
             />
