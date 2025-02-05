@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Appointment {
-  _id: string;
+  appointmentId: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
