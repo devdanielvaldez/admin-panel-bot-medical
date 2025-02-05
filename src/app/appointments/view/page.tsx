@@ -262,7 +262,7 @@ const AppointmentTable = () => {
               <tbody>
                 {currentAppointments.map((appointment, index) => (
                   <tr
-                    key={appointment._id}
+                    key={appointment.appointmentId}
                     className={`hover:bg-gray-100 dark:hover:bg-gray-800 transition-all ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
                       }`}
                   >
@@ -307,7 +307,7 @@ const AppointmentTable = () => {
                         appointment.statusAppointment !== 'CO' && (
                           <button
                             className="text-red-600 hover:text-red-800 transition-all"
-                            onClick={() => changeStatusToCA(appointment._id)}
+                            onClick={() => changeStatusToCA(appointment.appointmentId)}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                               <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
