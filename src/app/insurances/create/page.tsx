@@ -23,18 +23,21 @@ const InsuranceRegistration: React.FC = () => {
   const id = searchParams.get("id");
   const [insuranceName, setInsuranceName] = useState<string>("");
   const [contactPhone, setContactPhone] = useState<string>("");
+  const [userOfv, setUserOfv] = useState<string>("");
+  const [passwordOfv, setPasswordOfv] = useState<string>("");
   const [services, setServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<
     { service: string; insurancePrice: string }[]
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<Message | null>(null);
+  const [insurancesCatalogs, setInsurancesCatalogs] = useState([]);
 
   // Obtener los servicios disponibles desde el backend
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/services/list");
+        const response = await axios.get("http://localhost:3030/api/services/list");
         if (response.data.ok) {
           setServices(response.data.services);
         }
@@ -43,19 +46,34 @@ const InsuranceRegistration: React.FC = () => {
       }
     };
 
+    const fetchCatalogs = async () => {
+      try {
+        const response = await axios.get("http://localhost:3030/api/insurances/get/catalogs");
+        if (response.data.ok) {
+          setInsurancesCatalogs(response.data.data);
+          console.log(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener los servicios:", error);
+      }
+    }
+
     fetchServices();
+    fetchCatalogs();
   }, []);
 
   useEffect(() => {
     if (id) {
       const fetchInsurance = async () => {
         try {
-          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/${id}`);
+          const response = await axios.get(`http://localhost:3030/api/insurances/${id}`);
           if (response.data.ok) {
             console.log(response.data)
             const insurance = response.data.data;
             setInsuranceName(insurance.insuranceName);
             setContactPhone(insurance.contactPhone);
+            setUserOfv(insurance.userOfv);
+            setPasswordOfv(insurance.passwordOfv);
             setSelectedServices(
               insurance.services.map((s: any) => ({
                 service: s.service._id,
@@ -110,20 +128,30 @@ const InsuranceRegistration: React.FC = () => {
 
     try {
       if (id) {
-        await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/update/${id}`, {
+        await axios.put(`http://localhost:3030/api/insurances/update/${id}`, {
           insuranceName,
           contactPhone,
           services: selectedServices,
+          userOfv,
+          passwordOfv
         });
         setMessage({ type: "success", text: "¡Seguro médico actualizado con éxito!" });
       } else {
-        await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/create", {
+        await axios.post("http://localhost:3030/api/insurances/create", {
           insuranceName,
           contactPhone,
           services: selectedServices,
+          userOfv,
+          passwordOfv
+        }, {
+          headers: {
+            'branchid': localStorage.getItem('selectedBranch')
+          }
         });
         setInsuranceName("");
         setContactPhone("");
+        setUserOfv("");
+        setPasswordOfv("");
         setSelectedServices([]);
         setMessage({ type: "success", text: "¡Seguro médico registrado con éxito!" });
       }
@@ -141,11 +169,11 @@ const InsuranceRegistration: React.FC = () => {
     <DefaultLayout>
       <div>
         {/* Encabezado */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
+        <div className="text-left mb-8">
+          <h1 className="text-lg font-bold text-gray-800 dark:text-white">
             Registrar Seguro Médico
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             Ingresa los datos para registrar un seguro médico
           </p>
         </div>
@@ -160,15 +188,18 @@ const InsuranceRegistration: React.FC = () => {
             >
               Nombre del Seguro
             </label>
-            <input
-              type="text"
+            <select
               id="insuranceName"
               value={insuranceName}
               onChange={(e) => setInsuranceName(e.target.value)}
               className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-              placeholder="Ej: Seguro Vida"
               required
-            />
+            >
+              <option value="" selected disabled hidden>Seleccione el seguro que desea asociar</option>
+              {insurancesCatalogs.map((i: any) => (
+                <option value={i.id}>{i.name}</option>
+              ))}
+            </select>
           </div>
 
           {/* Teléfono de Contacto */}
@@ -186,7 +217,38 @@ const InsuranceRegistration: React.FC = () => {
               onChange={(e) => setContactPhone(e.target.value)}
               className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="Ej: 1234567890"
-              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="userOfv"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Usuario
+            </label>
+            <input
+              type="text"
+              id="userOfv"
+              value={userOfv}
+              onChange={(e) => setUserOfv(e.target.value)}
+              className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="passwordOfv"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Contraseña
+            </label>
+            <input
+              type="text"
+              id="passwordOfv"
+              value={passwordOfv}
+              onChange={(e) => setPasswordOfv(e.target.value)}
+              className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -238,10 +300,10 @@ const InsuranceRegistration: React.FC = () => {
           {/* Botón de Enviar */}
           <button
             type="submit"
-            disabled={loading || selectedServices.length === 0}
+            disabled={loading}
             className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition-transform transform ${loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600 focus:ring focus:ring-blue-300"
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600 focus:ring focus:ring-blue-300"
               }`}
           >
             {loading ? "Registrando..." : "Registrar Seguro"}
@@ -252,8 +314,8 @@ const InsuranceRegistration: React.FC = () => {
         {message && (
           <div
             className={`mt-6 p-4 rounded-lg text-center transition-all ${message.type === "success"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
               }`}
           >
             {message.text}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useRouter } from "next/navigation";
 import withAuth from "@/hooks/useAuth";
+import axios from "axios";
 
 const BlockDatePage = () => {
   const [dateBlock, setDateBlock] = useState<string>("");
@@ -18,7 +19,7 @@ const BlockDatePage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     // Validación en el front-end
     if (!blockAllDay && startTime >= endTime) {
       setMessage({
@@ -28,7 +29,7 @@ const BlockDatePage = () => {
       setLoading(false);
       return;
     }
-
+  
     const requestBody = {
       dateBlock,
       startTime: blockAllDay ? null : startTime,
@@ -36,48 +37,46 @@ const BlockDatePage = () => {
       blockAllDay,
       embedding: [0.0, 0.0], // Placeholder para el embedding, debe ser reemplazado en el backend
     };
-
+  
     try {
-      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/block-dates/create", {
-        method: "POST",
+      const response = await axios.post("http://localhost:3030/api/block-dates/create", requestBody, {
         headers: {
           "Content-Type": "application/json",
+          "branchid": localStorage.getItem("selectedBranch"),
         },
-        body: JSON.stringify(requestBody),
       });
-
-      if (response.ok) {
-        const data = await response.json();
+  
+      if (response.status === 200 || response.status === 201) {
         setMessage({ type: "success", text: "Fecha bloqueada registrada con éxito." });
         setDateBlock("");
         setStartTime("");
         setEndTime("");
         setBlockAllDay(false);
-        router
-          .push('/block-dates/view')
+        router.push('/block-dates/view');
       } else {
-        const errorData = await response.json();
         setMessage({
           type: "error",
-          text: errorData.msg || "Error al registrar la fecha bloqueada.",
+          text: response.data.msg || "Error al registrar la fecha bloqueada.",
         });
       }
     } catch (error) {
+      console.error(error);
       setMessage({ type: "error", text: "Error interno del servidor. Por favor, intenta más tarde." });
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <DefaultLayout>
       <div>
         {/* Encabezado */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+        <div className="text-left mb-8">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-white">
             Bloquear Fecha y Horario
           </h2>
-          <p className="text-gray-500 dark:text-gray-300 mt-2">
+          <p className="text-gray-500 dark:text-gray-300 text-sm">
             Selecciona una fecha y el horario que deseas bloquear.
           </p>
         </div>

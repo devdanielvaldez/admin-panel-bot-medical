@@ -6,6 +6,7 @@ import DefaultLayout from '@/components/Layouts/DefaultLayout';
 import { useRouter } from 'next/navigation';
 import moment from 'moment';
 import withAuth from '@/hooks/useAuth';
+import Notiflix from 'notiflix';
 
 const BlockedDatesPage = () => {
   const [blockedDates, setBlockedDates] = useState<any[]>([]);
@@ -16,7 +17,7 @@ const BlockedDatesPage = () => {
   // Función para obtener las fechas bloqueadas
   const fetchBlockedDates = async () => {
     try {
-      const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'block-dates/list');
+      const response = await axios.get('http://localhost:3030/api/' + 'block-dates/list');
       setBlockedDates(response.data.blockedDates);
     } catch (err) {
       setError('Error al cargar las fechas bloqueadas.');
@@ -25,14 +26,12 @@ const BlockedDatesPage = () => {
     }
   };
 
-  // Función para eliminar una fecha bloqueada
   const deleteBlockedDate = async (id: string) => {
     try {
-      const confirmed = confirm('¿Estás seguro de que deseas eliminar esta fecha bloqueada?');
-      if (!confirmed) return;
-
-      await axios.delete(`https://api-jennifer-wkeor.ondigitalocean.app/api/block-dates/delete/${id}`);
-      setBlockedDates((prevDates) => prevDates.filter((date) => date._id !== id));
+      Notiflix.Confirm.show('¿Estas seguro?', 'Por favor confirme si desea continuar', 'Sí, Eliminar', 'Cancelar', async () => {
+        await axios.delete(`http://localhost:3030/api/block-dates/delete/${id}`);
+        setBlockedDates((prevDates) => prevDates.filter((date) => date._id !== id));
+      })
     } catch (err) {
       setError('Error al eliminar la fecha bloqueada.');
     }
@@ -58,7 +57,7 @@ const BlockedDatesPage = () => {
     <DefaultLayout>
       <div>
         <header className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
             Fechas y Horarios Bloqueados
           </h1>
           <button
@@ -68,8 +67,6 @@ const BlockedDatesPage = () => {
             + Registrar Bloqueo de Cita
           </button>
         </header>
-
-        {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="overflow-hidden rounded-lg shadow-md">
           <table className="w-full table-auto border-collapse">

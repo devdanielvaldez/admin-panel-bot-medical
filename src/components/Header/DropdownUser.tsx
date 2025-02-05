@@ -15,7 +15,7 @@ const DropdownUser = () => {
   useEffect(() => {
     const fetchUserData = () => {
       axios
-      .get('https://api-jennifer-wkeor.ondigitalocean.app/api/auth/me', {
+      .get('http://localhost:3030/api/auth/me', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
         }
@@ -31,6 +31,7 @@ const DropdownUser = () => {
 
   const logout = () => {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('selectedBranch')
     router.push('/');
   }
 

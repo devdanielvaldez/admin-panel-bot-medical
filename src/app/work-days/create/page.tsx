@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import withAuth from "@/hooks/useAuth";
 
 const WorkDayForm = () => {
@@ -14,6 +14,31 @@ const WorkDayForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  useEffect(() => {
+    const fetchWorkDayById = async () => {
+      if (id) {
+        try {
+          const response = await axios.get(`http://localhost:3030/api/available-work-days/${id}`);
+          if (response.data.ok && response.data.availableWorkDay) {
+            const { dayOfWeek, workHours } = response.data.availableWorkDay;
+            setDayOfWeek(dayOfWeek);
+            setWorkHours(workHours);
+          } else {
+            setError("No se encontraron datos para el ID proporcionado.");
+          }
+        } catch (err) {
+          console.error("Error al cargar los datos del día laboral:", err);
+          setError("Hubo un error al cargar los datos del día laboral.");
+        }
+      }
+    };
+
+    fetchWorkDayById();
+  }, [id]);
 
   const handleAddWorkHour = () => {
     setWorkHours([...workHours, { startTime: "", endTime: "" }]);
@@ -36,32 +61,46 @@ const WorkDayForm = () => {
     }
 
     try {
-      const response = await axios.post(
-        "https://api-jennifer-wkeor.ondigitalocean.app/api/available-work-days/create",
-        { dayOfWeek, workHours }
-      );
+      let response;
+      const branchid = localStorage.getItem('selectedBranch');
+
+      if (id) {
+        // Si hay un ID, estamos en modo edición
+        response = await axios.put(
+          `http://localhost:3030/api/available-work-days/edit/${id}`,
+          { dayOfWeek, workHours },
+          { headers: { branchid } }
+        );
+      } else {
+        // Si no hay ID, es un nuevo registro
+        response = await axios.post(
+          "http://localhost:3030/api/available-work-days/create",
+          { dayOfWeek, workHours },
+          { headers: { branchid } }
+        );
+      }
 
       if (response.data.ok) {
         setSuccessMessage(response.data.message);
         setDayOfWeek("");
         setWorkHours([{ startTime: "", endTime: "" }]);
-        router
-          .push('/work-days/view')
+        router.push('/work-days/view');
       }
     } catch (error) {
-      setError("Hubo un error al registrar el día laboral.");
+      setError("Hubo un error al registrar o editar el día laboral.");
     }
-  };
+};
+
 
   return (
     <DefaultLayout>
       <div>
         {/* Encabezado */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-            Registrar Días Laborales
+        <div className="text-left mb-8">
+          <h1 className="text-lg font-bold text-gray-800 dark:text-white">
+            {id ? 'Editar' : 'Registrar'} Días Laborales
           </h1>
-          <p className="text-gray-500 dark:text-gray-300 mt-2">
+          <p className="text-gray-500 dark:text-gray-300 text-sm">
             Configura los días y horarios de trabajo para tu equipo.
           </p>
         </div>
@@ -94,7 +133,7 @@ const WorkDayForm = () => {
               onChange={(e) => setDayOfWeek(e.target.value)}
               className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
             >
-              <option value="">Seleccionar...</option>
+              <option value="" selected disabled hidden>Seleccionar...</option>
               <option value="Domingo">Domingo</option>
               <option value="Lunes">Lunes</option>
               <option value="Martes">Martes</option>

@@ -156,7 +156,7 @@ const AppointmentTable = () => {
 
   const changeStatusToCA = async (appointmentId: string) => {
     try {
-      const response = await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/change-status/ca/${appointmentId}`);
+      const response = await axios.put(`http://localhost:3030/api/appointments/change-status/ca/${appointmentId}`);
       if (response.data.ok) {
         alert("Estado cambiado a 'CA' (Cancelada)");
         fetchAppointments();
@@ -171,11 +171,15 @@ const AppointmentTable = () => {
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/appointments/all");
-      const data = await response.json();
+      const response = await axios.get("http://localhost:3030/api/appointments/all", {
+        headers: {
+          'branchid': localStorage.getItem('selectedBranch')
+        }
+      });
+      const data: any = response;
 
-      if (data.ok) {
-        setAppointments(data.data);
+      if (data.data.ok) {
+        setAppointments(data.data.data);
       } else {
         console.error("Error al obtener las citas");
       }

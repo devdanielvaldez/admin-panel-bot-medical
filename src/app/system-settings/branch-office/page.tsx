@@ -5,6 +5,7 @@ import withAuth from "@/hooks/useAuth";
 import axios from "axios";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import Notiflix from "notiflix";
 import { useEffect, useState } from "react";
 
 const BranchOfficeView = () => {
@@ -15,7 +16,11 @@ const BranchOfficeView = () => {
     const fetchResults = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/branch-office/list");
+            const response = await axios.get("http://localhost:3030/api/branch-office/list", {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            });
             const data = response.data;
             setBranchList(data.branchOffices);
 
@@ -35,6 +40,21 @@ const BranchOfficeView = () => {
     const goToEdit = (id: string) => {
         router.push('/system-settings/branch-office/create?id=' + id);
     }
+
+    const changeStatusOffice = (id: string) => {
+        axios
+        .post('http://localhost:3030/api/branch-office/change/status/' + id)
+        .then((data) => {
+            console.log(data.data.msg);
+            Notiflix.Notify.success(data.data.msg);
+            fetchResults();
+        })
+        .catch((err) => {
+            console.log(err);
+            Notiflix.Notify.success(err.respose.msg);
+
+        });
+    } 
 
     useEffect(() => {
         fetchResults();
@@ -86,7 +106,7 @@ const BranchOfficeView = () => {
                                     <td className="border-b border-gray-300 dark:border-gray-700 px-6 py-4 text-gray-800 dark:text-gray-100">
                                         {result.email}
                                     </td>
-                                    <td className="border-b border-gray-300 dark:border-gray-700 px-6 py-4 text-gray-800 dark:text-gray-100 flex justify-center">
+                                    <td>
                                         <button
                                             className="text-blue-500 hover:text-blue-700 ml-3"
                                             onClick={() => goToEdit(result._id)}
@@ -96,7 +116,8 @@ const BranchOfficeView = () => {
                                             </svg>
                                         </button>
                                         <button
-                                            className="text-red-500 hover:text-red-700 ml-3"
+                                            className={result.isActive == true ? 'text-green-500 hover:text-green-700 ml-3' : "text-red-500 hover:text-red-700 ml-3"}
+                                            onClick={() => changeStatusOffice(result._id)}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
@@ -108,33 +129,6 @@ const BranchOfficeView = () => {
                         </tbody>
                     </table>
                 </div>
-
-                {/* Paginación */}
-                {/* <div className="flex justify-between items-center mt-6">
-                    <div className="text-sm text-gray-500">
-                        Mostrando {startIndex + 1} a {Math.min(endIndex, filteredResults.length)} de{' '}
-                        {filteredResults.length} resultados
-                    </div>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-                        >
-                            Anterior
-                        </button>
-                        <span className="px-4 py-2 text-gray-800 dark:text-gray-300">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <button
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-                        >
-                            Siguiente
-                        </button>
-                    </div>
-                </div> */}
             </div>
         </DefaultLayout>
 

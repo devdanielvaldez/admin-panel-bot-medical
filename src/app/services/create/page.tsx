@@ -23,11 +23,16 @@ const ServiceRegistration: React.FC = () => {
         setMessage(null);
 
         try {
-            const response = await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/services/create", {
+            const response = await axios.post("http://localhost:3030/api/services/create", {
                 serviceName,
                 servicePrice: parseFloat(servicePrice), // Asegurarse de enviar el precio como número
                 serviceWithInsurance: parseFloat(servicePriceInsurance), // Asegurarse de enviar el precio como número
-            });
+            },
+                {
+                    headers: {
+                        'branchid': localStorage.getItem('selectedBranch')
+                    }
+                });
 
             setMessage({
                 type: "success",
@@ -52,11 +57,11 @@ const ServiceRegistration: React.FC = () => {
         <DefaultLayout>
             <div>
                 {/* Encabezado */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
+                <div className="text-left mb-8">
+                    <h1 className="text-lg font-bold text-gray-800 dark:text-white">
                         Registrar Servicio
                     </h1>
-                    <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         Ingrese los datos necesarios para registrar un nuevo servicio.
                     </p>
                 </div>
@@ -82,50 +87,54 @@ const ServiceRegistration: React.FC = () => {
                         />
                     </div>
 
-                    {/* Costo del Servicio */}
-                    <div>
-                        <label
-                            htmlFor="servicePrice"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                        >
-                            Costo del Servicio
-                        </label>
-                        <input
-                            type="number"
-                            id="servicePrice"
-                            value={servicePrice}
-                            onChange={(e) => setServicePrice(e.target.value)}
-                            className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                            placeholder="Ej: 250.00"
-                            required
-                        />
+                    <div className="flex space-x-4">
+                        {/* Costo del Servicio */}
+                        <div className="flex-1">
+                            <label
+                                htmlFor="servicePrice"
+                                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                            >
+                                Costo del Servicio
+                            </label>
+                            <input
+                                type="number"
+                                id="servicePrice"
+                                value={servicePrice}
+                                onChange={(e) => setServicePrice(e.target.value)}
+                                className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                placeholder="Ej: 250.00"
+                                required
+                            />
+                        </div>
+
+                        {/* Costo del Servicio con Seguro */}
+                        <div className="flex-1">
+                            <label
+                                htmlFor="servicePriceInsurance"
+                                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                            >
+                                Costo del Servicio con Seguro
+                            </label>
+                            <input
+                                type="number"
+                                id="servicePriceInsurance"
+                                value={servicePriceInsurance}
+                                onChange={(e) => setServicePriceInsurance(e.target.value)}
+                                className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                placeholder="Ej: 200.00"
+                            />
+                        </div>
                     </div>
 
-                    {/* Costo del Servicio con Seguro */}
-                    <div>
-                        <label
-                            htmlFor="servicePriceInsurance"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                        >
-                            Costo del Servicio con Seguro
-                        </label>
-                        <input
-                            type="number"
-                            id="servicePriceInsurance"
-                            value={servicePriceInsurance}
-                            onChange={(e) => setServicePriceInsurance(e.target.value)}
-                            className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                            placeholder="Ej: 200.00"
-                        />
-                    </div>
+
 
                     {/* Botón de Registro */}
                     <button
                         type="submit"
                         disabled={loading}
                         className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition-all transform ${loading
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-300"
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-300"
                             }`}
                     >
                         {loading ? "Registrando..." : "Registrar Servicio"}
@@ -136,8 +145,8 @@ const ServiceRegistration: React.FC = () => {
                 {message && (
                     <div
                         className={`mt-6 p-4 rounded-lg text-center transition-all ${message.type === "success"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
                             }`}
                     >
                         {message.text}
