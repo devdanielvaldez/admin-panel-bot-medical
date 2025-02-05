@@ -5,16 +5,17 @@ import withAuth from "@/hooks/useAuth";
 import axios from "axios";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import Notiflix from "notiflix";
 import { useEffect, useState } from "react";
 
 interface Appointment {
-  _id: string;
+  appointmentId: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
   whatsAppNumber: string;
   patientMotive: string;
-  insuranceMake: string;
+  insuranceMake: any;
   identification: string;
   insuranceImage: string;
   address: string;
@@ -22,6 +23,9 @@ interface Appointment {
   dateTimeAppointment: string;
   statusAppointment: string;
   patientId: string;
+  isInsurance: boolean;
+  autorizationCode: string;
+  amount: number;
 }
 
 const AppointmentTable = () => {
@@ -34,9 +38,18 @@ const AppointmentTable = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const appointmentsPerPage = 5; // Número de citas por página
 
+  // Estados para modal de autorización de seguro
+  const [selectedInsuranceAppointment, setSelectedInsuranceAppointment] = useState<Appointment | null>(null);
+  const [showInsuranceModal, setShowInsuranceModal] = useState<boolean>(false);
+
   const handleViewAppointment = (appointment: any) => {
     setSelectedAppointment(appointment);
     setShowModal(true);
+  };
+
+  const handleOpenInsuranceModal = (appointment: Appointment) => {
+    setSelectedInsuranceAppointment(appointment);
+    setShowInsuranceModal(true);
   };
 
   const Modal = ({ appointment }: { appointment: any }) => {
@@ -107,7 +120,11 @@ const AppointmentTable = () => {
                       ? 'Pendiente'
                       : appointment.statusAppointment === 'CO'
                         ? 'Completada'
-                        : appointment.statusAppointment === 'COF' ? 'Confirmada' : appointment.statusAppointment === 'IN' ? 'En Consulta' : 'Cancelada'}
+                        : appointment.statusAppointment === 'COF'
+                          ? 'Confirmada'
+                          : appointment.statusAppointment === 'IN'
+                            ? 'En Consulta'
+                            : 'Cancelada'}
                   </p>
                 </div>
               </div>
@@ -154,6 +171,157 @@ const AppointmentTable = () => {
     );
   };
 
+  const InsuranceModal = ({ ap }: { ap: Appointment }) => {
+    const [showImageViewer, setShowImageViewer] = useState(false);
+    const [affiliateNumber, setAffiliateNumber] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const getInsuranceService = (apo: any) => {
+      if (
+        !apo ||
+        !apo.insuranceMake ||
+        !Array.isArray(apo.insuranceMake.services) ||
+        !Array.isArray(apo.services)
+      ) {
+        return [];
+      }
+
+      return apo.services.map(function (patientService: any) {
+        const matchingService = apo.insuranceMake.services.find(function (insuranceService: any) {
+          return insuranceService.service === patientService._id;
+        });
+
+        return {
+          ...patientService,
+          insurancePrice: matchingService ? matchingService.insurancePrice : null,
+          servicesInsureCode: matchingService ? matchingService.servicesInsureCode : null,
+        };
+      });
+    }
+
+    const handleAuthorize = async () => {
+      console.log(getInsuranceService(ap)[0].servicesInsureCode);
+      console.log(ap.insuranceMake.insuranceName);
+
+      const body = {
+        serviceCode: getInsuranceService(ap)[0].servicesInsureCode,
+        patientName: ap.firstName + ap.lastName,
+        patientPhone: ap.phoneNumber,
+        nAfiliado: affiliateNumber
+      };
+
+      console.log(body);
+      setIsLoading(true);
+      await axios
+        .post('http://localhost:3030/api/insurances/autorizar/humano', body)
+        .then(async (data) => {
+          console.log(data?.data?.sessionClose?.autorizacion?.numeroAutorizacion);
+          if (data?.data?.sessionClose == null) {
+            setIsLoading(false);
+            setShowInsuranceModal(false);
+            Notiflix.Notify.failure("El seguro no ha sido autorizado por la aseguradora");
+            return;
+          }
+          await axios
+            .put(`http://localhost:3030/api/appointments/save-authorization/${data?.data?.sessionClose?.autorizacion?.numeroAutorizacion}/${ap.appointmentId}/${data.data.montoArs.montoArs}`, {})
+            .then((res) => {
+              setIsLoading(false);
+              setShowInsuranceModal(false);
+              Notiflix.Report.success('Seguro Autorizado', `Número de Autorización: ${data.data.sessionClose.autorizacion.numeroAutorizacion}. Monto Autorizado: ${data.data.montoArs.montoArs}`, 'Continuar', () => {
+                console.log('capturado');
+              });
+            })
+        })
+        .catch((err) => {
+          setIsLoading(false);
+          setShowInsuranceModal(false);
+          console.log(err.response.data.msg);
+          Notiflix.Notify.failure(err.response.data.msg);
+        })
+    };
+
+    if (!ap) return null;
+
+    return (
+      <>
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[9999] backdrop-blur-sm"
+          style={{ zIndex: 9999 }}
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-[95%] max-w-3xl overflow-hidden transform transition-transform scale-100">
+            <div
+              className="h-40 bg-cover bg-center relative"
+              style={{
+                backgroundImage: `url('https://img.freepik.com/free-vector/clean-medical-background_53876-97927.jpg?semt=ais_hybrid')`,
+              }}
+            >
+              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                <h2 className="text-white text-2xl font-bold">Autorización de Seguro</h2>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {ap.insuranceImage && (
+                <div className="mb-6">
+                  <h3 className="text-gray-800 dark:text-gray-200 font-medium mb-2">Imagen del Seguro:</h3>
+                  <div className="flex justify-center">
+                    <img
+                      src={ap.insuranceImage}
+                      alt={ap.insuranceMake.insuranceName}
+                      className="rounded-lg shadow-lg max-h-64 object-contain cursor-pointer transition-transform duration-300 hover:scale-105"
+                      onClick={() => setShowImageViewer(true)}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <label className="block text-gray-800 dark:text-gray-200 font-medium mb-2">
+                  Número de Afiliado:
+                </label>
+                <input
+                  type="text"
+                  value={affiliateNumber}
+                  onChange={(e) => setAffiliateNumber(e.target.value)}
+                  placeholder="Ingrese el número de afiliado"
+                  className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:ring-blue-300 transition-all"
+                />
+              </div>
+
+              <div className="flex justify-center space-x-4">
+                <button
+                  className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg font-semibold transform transition-transform hover:scale-105"
+                  onClick={handleAuthorize}
+                >
+                  {isLoading == true ? 'Autorizando' : 'Autorizar'}
+                </button>
+                <button
+                  className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg font-semibold transform transition-transform hover:scale-105"
+                  onClick={() => setShowInsuranceModal(false)}
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {showImageViewer && (
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 z-[10000]"
+            onClick={() => setShowImageViewer(false)}
+          >
+            <img
+              src={ap.insuranceImage}
+              alt="Seguro"
+              className="rounded-lg max-h-[90%] max-w-[90%] object-contain"
+            />
+          </div>
+        )}
+      </>
+    );
+  };
+
   const changeStatusToCA = async (appointmentId: string) => {
     try {
       const response = await axios.put(`http://localhost:3030/api/appointments/change-status/ca/${appointmentId}`);
@@ -191,17 +359,16 @@ const AppointmentTable = () => {
   };
 
   const goToRegister = () => {
-    router
-      .push('/appointments/create');
-  }
+    router.push('/appointments/create');
+  };
 
   const goToHistoryClinical = (id: string) => {
-    router
-      .push('/clinicalHistory/create?id=' + id);
-  }
+    router.push('/clinicalHistory/create?id=' + id);
+  };
 
   const filteredAppointments = appointments.filter((appointment) =>
-    appointment.firstName.toLowerCase().includes(searchTerm.toLowerCase()) || appointment.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    appointment.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    appointment.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     appointment.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -226,8 +393,8 @@ const AppointmentTable = () => {
   }
 
   const convertDate = (date: string): any => {
-    return moment(date).add(1, 'd').format('DD-MM-YYYY')
-  }
+    return moment(date).add(1, 'd').format('DD-MM-YYYY');
+  };
 
   return (
     <DefaultLayout>
@@ -260,13 +427,17 @@ const AppointmentTable = () => {
                   <th className="px-6 py-4 text-left text-lg font-semibold">Paciente</th>
                   <th className="px-6 py-4 text-left text-lg font-semibold">Fecha de Cita</th>
                   <th className="px-6 py-4 text-left text-lg font-semibold">Estado</th>
+                  <th className="px-6 py-4 text-left text-lg font-semibold">Es Asegurado</th>
+                  <th className="px-6 py-4 text-left text-lg font-semibold">Aseguradora</th>
+                  <th className="px-6 py-4 text-left text-lg font-semibold">Código Autorización</th>
+                  <th className="px-6 py-4 text-left text-lg font-semibold">Monto Autorizado</th>
                   <th className="px-6 py-4"></th>
                 </tr>
               </thead>
               <tbody>
                 {currentAppointments.map((appointment, index) => (
                   <tr
-                    key={appointment._id}
+                    key={appointment.appointmentId}
                     className={`hover:bg-gray-100 dark:hover:bg-gray-800 transition-all ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
                       }`}
                   >
@@ -294,15 +465,31 @@ const AppointmentTable = () => {
                           ? 'Pendiente'
                           : appointment.statusAppointment === 'CO'
                             ? 'Completada'
-                            : appointment.statusAppointment === 'COF' ? 'Confirmada' : appointment.statusAppointment === 'IN' ? 'En Consulta' : 'Cancelada'}
+                            : appointment.statusAppointment === 'COF'
+                              ? 'Confirmada'
+                              : appointment.statusAppointment === 'IN'
+                                ? 'En Consulta'
+                                : 'Cancelada'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {appointment.isInsurance === true ? 'Si' : 'No'}
+                    </td>
+                    <td className="px-6 py-4">
+                      {appointment.insuranceMake.insuranceName}
+                    </td>
+                    <td className="px-6 py-4">
+                      {appointment.autorizationCode}
+                    </td>
+                    <td className="px-6 py-4">
+                      {appointment.amount}
                     </td>
                     <td className="px-6 py-4 flex items-center space-x-3">
                       <button
                         className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-all"
                         onClick={() => handleViewAppointment(appointment)}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                         </svg>
@@ -311,9 +498,9 @@ const AppointmentTable = () => {
                         appointment.statusAppointment !== 'CO' && (
                           <button
                             className="text-red-600 hover:text-red-800 transition-all"
-                            onClick={() => changeStatusToCA(appointment._id)}
+                            onClick={() => changeStatusToCA(appointment.appointmentId)}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                               <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                           </button>
@@ -322,10 +509,21 @@ const AppointmentTable = () => {
                         className="text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-all"
                         onClick={() => goToHistoryClinical(appointment.patientId)}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                         </svg>
                       </button>
+                      {appointment.autorizationCode == null && (
+                        <button
+                          className="ml-2 text-blue-600 hover:text-blue-800 transition-all"
+                          onClick={() => handleOpenInsuranceModal(appointment)}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                          </svg>
+
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -363,7 +561,8 @@ const AppointmentTable = () => {
           </div>
         </div>
 
-        {showModal && <Modal appointment={selectedAppointment} />}
+        {showModal && selectedAppointment && <Modal appointment={selectedAppointment} />}
+        {showInsuranceModal && selectedInsuranceAppointment && <InsuranceModal ap={selectedInsuranceAppointment} />}
       </div>
     </DefaultLayout>
   );

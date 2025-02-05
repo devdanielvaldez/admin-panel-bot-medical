@@ -16,6 +16,7 @@ interface Service {
   serviceName: string;
   servicePrice: number;
   serviceWithInsurance: number;
+  servicesInsureCode: string;
 }
 
 const InsuranceRegistration: React.FC = () => {
@@ -27,11 +28,12 @@ const InsuranceRegistration: React.FC = () => {
   const [passwordOfv, setPasswordOfv] = useState<string>("");
   const [services, setServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<
-    { service: string; insurancePrice: string }[]
+    { service: string; insurancePrice: string; servicesInsureCode: string; }[]
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<Message | null>(null);
   const [insurancesCatalogs, setInsurancesCatalogs] = useState([]);
+  const [serviceCode, setServiceCode] = useState("");
 
   // Obtener los servicios disponibles desde el backend
   useEffect(() => {
@@ -59,7 +61,7 @@ const InsuranceRegistration: React.FC = () => {
     }
 
     fetchServices();
-    fetchCatalogs();
+    // fetchCatalogs();
   }, []);
 
   useEffect(() => {
@@ -77,7 +79,8 @@ const InsuranceRegistration: React.FC = () => {
             setSelectedServices(
               insurance.services.map((s: any) => ({
                 service: s.service._id,
-                insurancePrice: s.insurancePrice.toString()
+                insurancePrice: s.insurancePrice.toString(),
+                servicesInsureCode: s.servicesInsureCode
               }))
             );
           }
@@ -102,6 +105,7 @@ const InsuranceRegistration: React.FC = () => {
       newSelectedServices.push({
         service: serviceId,
         insurancePrice: "",
+        servicesInsureCode: ""
       });
       setSelectedServices(newSelectedServices);
     }
@@ -120,6 +124,18 @@ const InsuranceRegistration: React.FC = () => {
     setSelectedServices(updatedServices);
   };
 
+  const handleCodeChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    serviceId: string
+  ) => {
+    const updatedCode = selectedServices.map((item) =>
+      item.service === serviceId
+        ? { ...item, servicesInsureCode: e.target.value }
+        : item
+    );
+    setSelectedServices(updatedCode);
+  };
+
   // Maneja el envío del formulario
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
@@ -132,8 +148,8 @@ const InsuranceRegistration: React.FC = () => {
           insuranceName,
           contactPhone,
           services: selectedServices,
-          userOfv,
-          passwordOfv
+          // userOfv,
+          // passwordOfv
         });
         setMessage({ type: "success", text: "¡Seguro médico actualizado con éxito!" });
       } else {
@@ -141,8 +157,8 @@ const InsuranceRegistration: React.FC = () => {
           insuranceName,
           contactPhone,
           services: selectedServices,
-          userOfv,
-          passwordOfv
+          // userOfv,
+          // passwordOfv
         }, {
           headers: {
             'branchid': localStorage.getItem('selectedBranch')
@@ -150,8 +166,8 @@ const InsuranceRegistration: React.FC = () => {
         });
         setInsuranceName("");
         setContactPhone("");
-        setUserOfv("");
-        setPasswordOfv("");
+        // setUserOfv("");
+        // setPasswordOfv("");
         setSelectedServices([]);
         setMessage({ type: "success", text: "¡Seguro médico registrado con éxito!" });
       }
@@ -188,7 +204,14 @@ const InsuranceRegistration: React.FC = () => {
             >
               Nombre del Seguro
             </label>
-            <select
+            <input type="text"
+              id="insuranceName"
+              value={insuranceName}
+              onChange={(e) => setInsuranceName(e.target.value)}
+              className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              required
+            />
+            {/* <select
               id="insuranceName"
               value={insuranceName}
               onChange={(e) => setInsuranceName(e.target.value)}
@@ -199,7 +222,7 @@ const InsuranceRegistration: React.FC = () => {
               {insurancesCatalogs.map((i: any) => (
                 <option value={i.id}>{i.name}</option>
               ))}
-            </select>
+            </select> */}
           </div>
 
           {/* Teléfono de Contacto */}
@@ -220,7 +243,7 @@ const InsuranceRegistration: React.FC = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <label
               htmlFor="userOfv"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -250,7 +273,7 @@ const InsuranceRegistration: React.FC = () => {
               onChange={(e) => setPasswordOfv(e.target.value)}
               className="mt-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
             />
-          </div>
+          </div> */}
 
           {/* Seleccionar Servicios */}
           <div>
@@ -282,7 +305,8 @@ const InsuranceRegistration: React.FC = () => {
                   >
                     {service.serviceName} - ${service.serviceWithInsurance}
                   </label>
-                  <input
+                    <div className="flex">
+                    <input
                     type="number"
                     placeholder="Cobertura seguro"
                     className="w-92 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
@@ -292,6 +316,15 @@ const InsuranceRegistration: React.FC = () => {
                     }
                     onChange={(e) => handlePriceChange(e, service._id)}
                   />
+
+                  <input type="text" placeholder="Código de Servicio" className="w-92 ml-2 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  onChange={(e) => handleCodeChange(e, service._id)}
+                  value={
+                    selectedServices.find((item) => item.service === service._id)
+                      ?.servicesInsureCode || ""
+                  }
+                  />
+                    </div>
                 </div>
               ))}
             </div>
