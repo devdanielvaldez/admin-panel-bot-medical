@@ -73,7 +73,7 @@ const AppointmentMedicalDetails = forwardRef<{}, AppointmentMedicalDetailsProps>
     useEffect(() => {
         const fetchDetails = async () => {
             const response = await axios
-                .get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/' + 'appointments/details/a/' + appointmentId);
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'appointments/details/a/' + appointmentId);
             setPhysicalExamination(response.data.data.physicalExamination);
             setCurrentIllnessHistory(response.data.data.currentIllnessHistory);
             setLabTestsAndDiagnostics(response.data.data.labTestsAndDiagnostics);
@@ -95,7 +95,7 @@ const AppointmentMedicalDetails = forwardRef<{}, AppointmentMedicalDetailsProps>
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/' + 'appointments/register/details', {
+            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'appointments/register/details', {
                 appointmentId,
                 physicalExamination,
                 currentIllnessHistory,

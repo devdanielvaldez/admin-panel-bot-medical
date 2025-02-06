@@ -22,7 +22,7 @@ const WorkDayForm = () => {
     const fetchWorkDayById = async () => {
       if (id) {
         try {
-          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/available-work-days/${id}`);
+          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/available-work-days/${id}`);
           if (response.data.ok && response.data.availableWorkDay) {
             const { dayOfWeek, workHours } = response.data.availableWorkDay;
             setDayOfWeek(dayOfWeek);
@@ -67,14 +67,14 @@ const WorkDayForm = () => {
       if (id) {
         // Si hay un ID, estamos en modo edición
         response = await axios.put(
-          `https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/available-work-days/edit/${id}`,
+          `https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/available-work-days/edit/${id}`,
           { dayOfWeek, workHours },
           { headers: { branchid } }
         );
       } else {
         // Si no hay ID, es un nuevo registro
         response = await axios.post(
-          "https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/available-work-days/create",
+          "https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/available-work-days/create",
           { dayOfWeek, workHours },
           { headers: { branchid } }
         );
