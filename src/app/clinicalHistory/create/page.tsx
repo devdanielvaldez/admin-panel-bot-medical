@@ -323,7 +323,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
         delete embedding.embedding;
         delete embedding.patientId.embedding;
         const response = await axios
-            .post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'clinical/history/analyze', {
+            .post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'clinical/history/analyze', {
                 embedding: embedding
             });
         setReport(response.data.analysis);
@@ -337,7 +337,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
         setPatientId(searchParams.get('id') || "");
         const fetchHistoryClinical = async () => {
             try {
-                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'clinical/history/' + searchParams.get('id'));
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'clinical/history/' + searchParams.get('id'));
                 if (response.data.clinicalHistory.embedding) {
                     getAnalyzes(response.data.clinicalHistory);
                 }
@@ -394,7 +394,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
 
         const fetchPatient = async () => {
             const response = await axios
-                .get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'patient/find/' + searchParams.get('id'));
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'patient/find/' + searchParams.get('id'));
             const data = response.data.data;
             setPatientData({
                 firstName: data.firstName,
@@ -411,14 +411,14 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
 
         const fetchPatientDetails = async (patientId: string) => {
             const response = await axios
-                .get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'appointments/details/' + patientId);
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/details/' + patientId);
             setPatientHistoryDetails(response.data.data);
             console.log('patient --->', response.data.data)
         }
         const fetchDetails = async (id: string) => {
             console.log('entro', id);
             const response = await axios
-                .get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'appointments/' + id);
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/' + id);
             // fetchPatientDetails(response.data.data.patientId._id);
             // setPatientInfo(response.data.data);
             console.log('resp --->', response.data.data);
@@ -462,7 +462,7 @@ const ClinicalHistoryForm: React.FC<ClinicalHistoryFormProps> = ({
         });
         e.preventDefault();
         try {
-            await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'clinical/history/create', {
+            await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'clinical/history/create', {
                 patientId,
                 ...formData,
             });

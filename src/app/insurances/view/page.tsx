@@ -32,7 +32,7 @@ const InsurancesTable = () => {
   const fetchInsurances = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/insurances/list", {
+      const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/list", {
         headers: {
           'branchid': localStorage.getItem('selectedBranch')
         }
@@ -53,7 +53,7 @@ const InsurancesTable = () => {
     });
 
     try {
-      const response = await axios.delete("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/insurances/delete/" + id);
+      const response = await axios.delete("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/delete/" + id);
       Notiflix.Notify.success(response.data.msg);
       fetchInsurances();
     } catch (err) {

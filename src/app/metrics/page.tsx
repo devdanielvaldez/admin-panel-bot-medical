@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchMetrics = () => {
-        fetch("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/metrics/")
+        fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/metrics/")
         .then((res) => res.json())
         .then((data) => {
           setMetrics(data);
@@ -38,7 +38,7 @@ export default function Dashboard() {
   }, []);
 
   const fetchAppointments = async () => {
-    const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/turns/all");
+    const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/turns/all");
     setAppointments(response.data.data);
   };
 
@@ -80,7 +80,7 @@ export default function Dashboard() {
   };
 
   const handleConfirm = async (id: string) => {
-    const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'turns/confirm/' + id);
+    const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/confirm/' + id);
     Notiflix.Notify.success('Turno Confirmado');
     fetchAppointments();
     console.log(response)

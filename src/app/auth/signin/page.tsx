@@ -42,7 +42,7 @@ const SignIn: React.FC = () => {
       });
       // await signInWithEmailAndPassword(auth, email, password);
       await axios
-        .post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'auth/login', {
+        .post('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'auth/login', {
           username: email,
           pwd: password
         })

@@ -39,7 +39,7 @@ const InsuranceRegistration: React.FC = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/services/list");
+        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/services/list");
         if (response.data.ok) {
           setServices(response.data.services);
         }
@@ -50,7 +50,7 @@ const InsuranceRegistration: React.FC = () => {
 
     const fetchCatalogs = async () => {
       try {
-        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/insurances/get/catalogs");
+        const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/get/catalogs");
         if (response.data.ok) {
           setInsurancesCatalogs(response.data.data);
           console.log(response.data.data);
@@ -68,7 +68,7 @@ const InsuranceRegistration: React.FC = () => {
     if (id) {
       const fetchInsurance = async () => {
         try {
-          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/insurances/${id}`);
+          const response = await axios.get(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/${id}`);
           if (response.data.ok) {
             console.log(response.data)
             const insurance = response.data.data;
@@ -144,7 +144,7 @@ const InsuranceRegistration: React.FC = () => {
 
     try {
       if (id) {
-        await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/insurances/update/${id}`, {
+        await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/update/${id}`, {
           insuranceName,
           contactPhone,
           services: selectedServices,
@@ -153,7 +153,7 @@ const InsuranceRegistration: React.FC = () => {
         });
         setMessage({ type: "success", text: "¡Seguro médico actualizado con éxito!" });
       } else {
-        await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/insurances/create", {
+        await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/api/insurances/create", {
           insuranceName,
           contactPhone,
           services: selectedServices,

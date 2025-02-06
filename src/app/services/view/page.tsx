@@ -19,7 +19,7 @@ const ServicesTable = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/services/list", {
+      const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/services/list", {
         headers: {
           'branchid': localStorage.getItem('selectedBranch')
         }
@@ -54,7 +54,7 @@ const ServicesTable = () => {
   const changeStatus = async (id: string, isActive: any) => {
     try {
       // Realizar la solicitud para alternar el estado del servicio
-      const response = await axios.patch(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/services/toggle/${id}`, { isActive }, {
+      const response = await axios.patch(`https://api-jennifer-wkeor.ondigitalocean.app/api/services/toggle/${id}`, { isActive }, {
         headers: {
           'branchid': localStorage.getItem('selectedBranch'),
         },

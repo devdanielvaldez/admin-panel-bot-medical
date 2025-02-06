@@ -24,7 +24,7 @@ const ResultsTable = () => {
     const fetchResults = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/results/all");
+            const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/results/all");
             const data = response.data.data;
             setResults(data);
             setFilteredResults(data);
