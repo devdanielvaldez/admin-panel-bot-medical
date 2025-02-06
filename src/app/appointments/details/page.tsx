@@ -144,13 +144,13 @@ const AppointmentDetails = () => {
     console.log(searchParams.get('id'));
     const fetchPatientDetails = async (patientId: string) => {
       const response = await axios
-        .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/details/' + patientId);
+        .get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'appointments/details/' + patientId);
       setPatientHistoryDetails(response.data.data);
       console.log('patient --->', response.data.data)
     }
     const fetchDetails = async () => {
       const response = await axios
-        .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'appointments/' + searchParams.get('id'));
+        .get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'appointments/' + searchParams.get('id'));
       fetchPatientDetails(response.data.data.patientId._id);
       setPatientData(response.data.data);
       console.log(response.data.data);
@@ -178,11 +178,11 @@ const AppointmentDetails = () => {
 
   const startAppointment = async () => {
     const response = await axios
-      .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/' + patientData._id)
+      .get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'turns/' + patientData._id)
       .then(async (d: any) => {
         // return console.log(d);
         await axios
-          .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/in_progress/' + d.data.data[0]._id)
+          .get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'turns/in_progress/' + d.data.data[0]._id)
           .then(() => {
             Notiflix.Notify.success('Consulta Iniciada');
             setPatientData((prevPatientData: any) => ({
@@ -195,11 +195,11 @@ const AppointmentDetails = () => {
 
   const finishAppointment = async () => {
     const response = await axios
-      .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/' + patientData._id)
+      .get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'turns/' + patientData._id)
       .then(async (d: any) => {
         // return console.log(d);
         await axios
-          .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/complete/' + d.data.data[0]._id)
+          .get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'turns/complete/' + d.data.data[0]._id)
           .then(async () => {
             Notiflix.Notify.success('Consulta completada');
             setPatientData((prevPatientData: any) => ({
@@ -207,7 +207,7 @@ const AppointmentDetails = () => {
               statusAppointment: 'CO'
             }));
             await axios
-            .get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'accounting/' + patientData._id)
+            .get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'accounting/' + patientData._id)
             .then((res) => {
               console.log(res);
             })

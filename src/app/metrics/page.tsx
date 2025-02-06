@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchMetrics = () => {
-        fetch("https://api-jennifer-wkeor.ondigitalocean.app/api/metrics/")
+        fetch("https://dra-daines-uduu3.ondigitalocean.app/api/metrics/")
         .then((res) => res.json())
         .then((data) => {
           setMetrics(data);
@@ -38,7 +38,7 @@ export default function Dashboard() {
   }, []);
 
   const fetchAppointments = async () => {
-    const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/turns/all");
+    const response = await axios.get("https://dra-daines-uduu3.ondigitalocean.app/api/turns/all");
     setAppointments(response.data.data);
   };
 
@@ -80,7 +80,7 @@ export default function Dashboard() {
   };
 
   const handleConfirm = async (id: string) => {
-    const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/' + 'turns/confirm/' + id);
+    const response = await axios.get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'turns/confirm/' + id);
     Notiflix.Notify.success('Turno Confirmado');
     fetchAppointments();
     console.log(response)
@@ -206,13 +206,13 @@ const startAppointments = (id: string) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-8">
           <div className="p-4 bg-white rounded-lg shadow-lg text-center">
             <h2 className="text-lg font-semibold">📅 Mes con más citas</h2>
-            <p className="text-2xl font-bold">{metrics.maxAppointmentsMonth[0]}</p>
-            <p className="text-gray-500">{metrics.maxAppointmentsMonth[1]} citas</p>
+            <p className="text-2xl font-bold">{metrics.maxAppointmentsMonth?.[0]}</p>
+            <p className="text-gray-500">{metrics.maxAppointmentsMonth?.[1]} citas</p>
           </div>
           <div className="p-4 bg-white rounded-lg shadow-lg text-center">
             <h2 className="text-lg font-semibold">🔝 Servicio más usado</h2>
-            <p className="text-2xl font-bold">{metrics.mostUsedServices[0]?.name}</p>
-            <p className="text-gray-500">{metrics.mostUsedServices[0]?.count} citas</p>
+            <p className="text-2xl font-bold">{metrics.mostUsedServices?.[0]?.name}</p>
+            <p className="text-gray-500">{metrics.mostUsedServices?.[0]?.count} citas</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

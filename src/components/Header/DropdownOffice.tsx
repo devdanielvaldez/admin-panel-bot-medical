@@ -18,7 +18,7 @@ const DropdownOffice = () => {
 
         const fetchResults = async () => {
             try {
-                const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/branch-office/list/active", {
+                const response = await axios.get("https://dra-daines-uduu3.ondigitalocean.app/api/branch-office/list/active", {
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
                     }

@@ -15,7 +15,7 @@ const DropdownUser = () => {
   useEffect(() => {
     const fetchUserData = () => {
       axios
-      .get('https://api-jennifer-wkeor.ondigitalocean.app/api/auth/me', {
+      .get('https://dra-daines-uduu3.ondigitalocean.app/api/auth/me', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
         }

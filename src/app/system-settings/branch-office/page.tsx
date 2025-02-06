@@ -16,7 +16,7 @@ const BranchOfficeView = () => {
     const fetchResults = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/api/branch-office/list", {
+            const response = await axios.get("https://dra-daines-uduu3.ondigitalocean.app/api/branch-office/list", {
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
                 }
@@ -43,7 +43,7 @@ const BranchOfficeView = () => {
 
     const changeStatusOffice = (id: string) => {
         axios
-        .post('https://api-jennifer-wkeor.ondigitalocean.app/api/branch-office/change/status/' + id)
+        .post('https://dra-daines-uduu3.ondigitalocean.app/api/branch-office/change/status/' + id)
         .then((data) => {
             console.log(data.data.msg);
             Notiflix.Notify.success(data.data.msg);
