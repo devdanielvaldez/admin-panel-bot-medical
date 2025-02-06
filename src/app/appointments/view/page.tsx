@@ -213,7 +213,7 @@ const AppointmentTable = () => {
       console.log(body);
       setIsLoading(true);
       await axios
-        .post('https://dra-daines-uduu3.ondigitalocean.app/api/insurances/autorizar/humano', body)
+        .post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/insurances/autorizar/humano', body)
         .then(async (data) => {
           console.log(data?.data?.sessionClose?.autorizacion?.numeroAutorizacion);
           if (data?.data?.sessionClose == null) {
@@ -223,7 +223,7 @@ const AppointmentTable = () => {
             return;
           }
           await axios
-            .put(`https://dra-daines-uduu3.ondigitalocean.app/api/appointments/save-authorization/${data?.data?.sessionClose?.autorizacion?.numeroAutorizacion}/${ap.appointmentId}/${data.data.montoArs.montoArs}`, {})
+            .put(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/appointments/save-authorization/${data?.data?.sessionClose?.autorizacion?.numeroAutorizacion}/${ap.appointmentId}/${data.data.montoArs.montoArs}`, {})
             .then((res) => {
               setIsLoading(false);
               setShowInsuranceModal(false);
@@ -324,7 +324,7 @@ const AppointmentTable = () => {
 
   const changeStatusToCA = async (appointmentId: string) => {
     try {
-      const response = await axios.put(`https://dra-daines-uduu3.ondigitalocean.app/api/appointments/change-status/ca/${appointmentId}`);
+      const response = await axios.put(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/appointments/change-status/ca/${appointmentId}`);
       if (response.data.ok) {
         alert("Estado cambiado a 'CA' (Cancelada)");
         fetchAppointments();
@@ -339,7 +339,7 @@ const AppointmentTable = () => {
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://dra-daines-uduu3.ondigitalocean.app/api/appointments/all", {
+      const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/appointments/all", {
         headers: {
           'branchid': localStorage.getItem('selectedBranch')
         }

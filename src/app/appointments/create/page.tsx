@@ -66,7 +66,7 @@ const AppointmentsPage = () => {
     useEffect(() => {
         const fetchAvailableAppointments = async () => {
             try {
-                const response = await axios.get('https://dra-daines-uduu3.ondigitalocean.app/api/'+ 'appointments/check/availability', {
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/'+ 'appointments/check/availability', {
                     headers: {
                         'branchid': localStorage.getItem('selectedBranch')
                     }
@@ -81,7 +81,7 @@ const AppointmentsPage = () => {
         }
         const fetchAvailableDays = async () => {
             try {
-                const response = await axios.get('https://dra-daines-uduu3.ondigitalocean.app/api/'+ 'available-work-days/list', {
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/'+ 'available-work-days/list', {
                     headers: {
                         'branchid': localStorage.getItem('selectedBranch')
                     }
@@ -99,7 +99,7 @@ const AppointmentsPage = () => {
 
         const fetchInsurances = async () => {
             try {
-                const response = await axios.get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'insurances/list', {
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'insurances/list', {
                     headers: {
                         'branchid': localStorage.getItem('selectedBranch')
                     }
@@ -112,7 +112,7 @@ const AppointmentsPage = () => {
         }
 
         const fetchServices = async () => {
-            const response = await axios.get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'services/list', {
+            const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'services/list', {
                 headers: {
                     'branchid': localStorage.getItem('selectedBranch')
                 }
@@ -132,7 +132,7 @@ const AppointmentsPage = () => {
 
     const findPatientInfo = async (phoneNumber: string) => {
         try {
-            const response = await axios.post('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'patient/find', {
+            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'patient/find', {
                 phoneNumber: phoneNumber
             });
             if (response.data.ok) {
@@ -230,7 +230,7 @@ const AppointmentsPage = () => {
         setError('');
 
         try {
-            const response = await axios.post('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'appointments/create', formData, {
+            const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'appointments/create', formData, {
                 headers: {
                     'branchid': localStorage.getItem('selectedBranch')
                 }
@@ -286,7 +286,7 @@ const AppointmentsPage = () => {
             const timeRanges = dayData.workHours;
 
             try {
-                const response = await axios.get("https://dra-daines-uduu3.ondigitalocean.app/api/block-dates/list");
+                const response = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/block-dates/list");
                 const blockedDates = response.data.blockedDates;
 
 
@@ -379,7 +379,7 @@ const AppointmentsPage = () => {
             ...prevFormData,
             services: servicesList
         }));
-        const response = await axios.post('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'appointments/calculate', {
+        const response = await axios.post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'appointments/calculate', {
             servicesIds: servicesList, insuranceId: formData.insuranceMake, isWithInsurance: formData.patientIsInsurante
         })
             .then((d: any) => {

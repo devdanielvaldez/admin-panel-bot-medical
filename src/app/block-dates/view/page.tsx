@@ -17,7 +17,7 @@ const BlockedDatesPage = () => {
   // Función para obtener las fechas bloqueadas
   const fetchBlockedDates = async () => {
     try {
-      const response = await axios.get('https://dra-daines-uduu3.ondigitalocean.app/api/' + 'block-dates/list');
+      const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'block-dates/list');
       setBlockedDates(response.data.blockedDates);
     } catch (err) {
       setError('Error al cargar las fechas bloqueadas.');
@@ -29,7 +29,7 @@ const BlockedDatesPage = () => {
   const deleteBlockedDate = async (id: string) => {
     try {
       Notiflix.Confirm.show('¿Estas seguro?', 'Por favor confirme si desea continuar', 'Sí, Eliminar', 'Cancelar', async () => {
-        await axios.delete(`https://dra-daines-uduu3.ondigitalocean.app/api/block-dates/delete/${id}`);
+        await axios.delete(`https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/block-dates/delete/${id}`);
         setBlockedDates((prevDates) => prevDates.filter((date) => date._id !== id));
       })
     } catch (err) {
