@@ -39,7 +39,7 @@ const BlockDatePage = () => {
     };
   
     try {
-      const response = await axios.post("http://localhost:3030/api/block-dates/create", requestBody, {
+      const response = await axios.post("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/block-dates/create", requestBody, {
         headers: {
           "Content-Type": "application/json",
           "branchid": localStorage.getItem("selectedBranch"),

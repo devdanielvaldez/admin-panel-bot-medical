@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import withAuth from "@/hooks/useAuth";
+import moment from "moment";
 
 interface ServiceUsed {
   service: {
@@ -34,11 +35,11 @@ const ReportsPage = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const allResponse = await axios.get("http://localhost:3030/api/accounting/reports/all");
-        const insuranceResponse = await axios.get("http://localhost:3030/api/accounting/reports/by-insurance");
-        const serviceResponse = await axios.get("http://localhost:3030/api/accounting/reports/by-service");
-        const withInsuranceResponse = await axios.get("http://localhost:3030/api/accounting/reports/with-insurance");
-        const withoutInsuranceResponse = await axios.get("http://localhost:3030/api/accounting/reports/without-insurance");
+        const allResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/all");
+        const insuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/by-insurance");
+        const serviceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/by-service");
+        const withInsuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/with-insurance");
+        const withoutInsuranceResponse = await axios.get("https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/accounting/reports/without-insurance");
 
         setAllReports(allResponse.data);
         setInsuranceReports(insuranceResponse.data);
@@ -52,6 +53,10 @@ const ReportsPage = () => {
 
     fetchReports();
   }, []);
+
+    const convertDate = (date: string): any => {
+      return moment(date).add(1, 'd').format('DD-MM-YYYY');
+    };
 
   return (
     <DefaultLayout>
@@ -79,7 +84,7 @@ const ReportsPage = () => {
                       key={report.appointmentId._id}
                       className="odd:bg-gray-50 even:bg-white dark:odd:bg-gray-700 dark:even:bg-gray-800"
                     >
-                      <td className="p-4">{new Date(report.date).toLocaleDateString()}</td>
+                      <td className="p-4">{convertDate(report.date)}</td>
                       <td className="p-4">{report.totalEarned}</td>
                       <td className="p-4">
                         {report.servicesUsed.map((service: any) => (
@@ -128,7 +133,7 @@ const ReportsPage = () => {
                       <td className="p-4">
                         {reports.map((report: any) => (
                           <div key={report._id}>
-                            {new Date(report.date).toLocaleDateString()}
+                            {convertDate(report.date)}
                           </div>
                         ))}
                       </td>
@@ -178,7 +183,7 @@ const ReportsPage = () => {
                       className="odd:bg-gray-50 even:bg-white dark:odd:bg-gray-700 dark:even:bg-gray-800"
                     >
                       <td className="p-4">
-                        {new Date(report.date).toLocaleDateString()}
+                        {convertDate(report.date)}
                       </td>
                       <td className="p-4">
                         {report.servicesUsed.map((service: any) => (
@@ -215,7 +220,7 @@ const ReportsPage = () => {
                       className="odd:bg-gray-50 even:bg-white dark:odd:bg-gray-700 dark:even:bg-gray-800"
                     >
                       <td className="p-4">
-                        {new Date(report.date).toLocaleDateString()}
+                        {convertDate(report.date)}
                       </td>
                       <td className="p-4">{report.totalEarned}</td>
                       <td className="p-4">
