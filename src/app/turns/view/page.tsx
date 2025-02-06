@@ -29,13 +29,13 @@ const TurnsList: React.FC = () => {
     }, []);
 
     const fetchAppointments = async () => {
-        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/' + 'turns/all');
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'turns/all');
         console.log(response.data.data);
         setAppointments(response.data.data);
     };
 
     const handleConfirm = async (id: string) => {
-        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/' + 'turns/confirm/' + id);
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'turns/confirm/' + id);
         Notiflix.Notify.success('Turno Confirmado');
         fetchAppointments();
         console.log(response)
@@ -46,14 +46,14 @@ const TurnsList: React.FC = () => {
     }
 
     const handleInProgress = async (id: string) => {
-        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/' + 'turns/in_progress/' + id);
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'turns/in_progress/' + id);
         Notiflix.Notify.success('Turno En Progreso');
         fetchAppointments();
         console.log(response)
     };
 
     const handleComplete = async (id: string) => {
-        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/' + 'turns/complete/' + id);
+        const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical3/api/' + 'turns/complete/' + id);
         Notiflix.Notify.success('Turno Completado');
         fetchAppointments();
         console.log(response)
