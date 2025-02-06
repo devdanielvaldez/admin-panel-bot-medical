@@ -4,6 +4,7 @@ import "./CalendarStyle.css";
 
 moment.locale("es-DO");
 
+
 interface CalendarProps {
   allowedDays: string[];
   onDateSelect: (date: string | null) => void;
