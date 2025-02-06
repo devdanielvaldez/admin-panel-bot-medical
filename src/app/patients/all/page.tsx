@@ -18,7 +18,7 @@ const PatientsAllPage = () => {
     useEffect(() => {
         const fetchPatients = async () => {
             try {
-                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/api/patient/find/all', {
+                const response = await axios.get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/patient/find/all', {
                     headers: {
                         'branchid': localStorage.getItem('selectedBranch')
                     }

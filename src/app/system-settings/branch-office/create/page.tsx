@@ -100,7 +100,7 @@ export default function CreateBranchOffice() {
         const fetchData = async () => {
             if(id) {
                 axios
-                .get('https://api-jennifer-wkeor.ondigitalocean.app/api/branch-office/by-id/' + id)
+                .get('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/branch-office/by-id/' + id)
                 .then((res) => {
                     const data = res.data.branchOfficeFound
                     setCaptureId(data._id);
@@ -137,7 +137,7 @@ export default function CreateBranchOffice() {
             svgSize: '30px'
         })
         axios
-        .post('https://api-jennifer-wkeor.ondigitalocean.app/api/branch-office/create-or-update', body, {
+        .post('https://api-jennifer-wkeor.ondigitalocean.app/apimedical2/api/branch-office/create-or-update', body, {
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken') 
             }
